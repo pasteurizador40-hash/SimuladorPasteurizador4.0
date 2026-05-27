@@ -61,6 +61,10 @@ a{color:var(--b2);text-decoration:none}
 .ig{display:flex;flex-direction:column;gap:4px;margin-bottom:8px}
 .ig label{font-size:11px;color:var(--txt2)}
 .ig input,.ig select{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:7px 10px;color:var(--txt);font-size:13px;font-family:inherit;width:100%}
+.ig input:disabled{
+  color:#111 !important;
+  opacity:1 !important;
+}
 .ig input:focus,.ig select:focus{outline:2px solid var(--g3);border-color:var(--g3)}
 .ig .hint{font-size:10px;color:var(--txt3)}
 .ig2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
