@@ -1,1 +1,0 @@
-# SimuladorPasteurizador4.0
