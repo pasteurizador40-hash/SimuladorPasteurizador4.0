@@ -1,0 +1,1290 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>AgroTech Invest — Simulador de Inversión Agroalimentaria</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --g1:#1a5c38;--g2:#2e7d52;--g3:#4a9e72;--g4:#c8e6d0;--g5:#e8f5ee;
+  --b1:#1a3a6b;--b2:#2563a8;--b3:#5b9fd4;--b4:#ddeeff;
+  --r1:#c0392b;--r2:#fdecea;--o1:#d4680a;--o2:#fef0e0;
+  --m1:#5b3fa6;--m2:#f0ecfd;
+  --txt:#1a1a1a;--txt2:#4a4a4a;--txt3:#888;
+  --border:#e0e0e0;--bg:#f4f6f4;--card:#fff;--surface:#f7f7f5;
+  --shadow:0 1px 4px rgba(0,0,0,0.08);
+}
+@media(prefers-color-scheme:dark){
+  :root{--txt:#e8ede8;--txt2:#a0aaa0;--txt3:#667066;--border:#2a342a;--bg:#0e150f;--card:#1a231b;--surface:#141c15}
+  .ig input:disabled{background:#1a4a28!important;color:#a0ffb0!important;-webkit-text-fill-color:#a0ffb0!important}
+}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--txt);font-size:14px;line-height:1.5;min-height:100vh;overflow-x:hidden}
+a{color:var(--b2);text-decoration:none}
+/* NAV */
+.nav{background:#0d1f13;color:#fff;display:flex;align-items:stretch;padding:0;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(0,0,0,0.3)}
+.nav-brand{padding:0 20px;display:flex;align-items:center;gap:10px;border-right:1px solid rgba(255,255,255,0.1)}
+.nav-brand .logo{width:28px;height:28px;background:var(--g2);border-radius:6px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;color:#fff}
+.nav-brand h1{font-size:14px;font-weight:600;color:#c8e6d0;letter-spacing:0.3px}
+.nav-brand p{font-size:10px;color:#6a8a6a}
+.nav-tabs{display:flex;overflow-x:auto;flex:1;scrollbar-width:none}
+.nav-tabs::-webkit-scrollbar{display:none}
+.nav-tab{padding:0 12px;font-size:11px;cursor:pointer;border:none;background:none;color:#8aaa8a;white-space:nowrap;border-bottom:2px solid transparent;height:48px;display:flex;align-items:center;gap:5px;transition:all 0.15s;font-family:inherit}
+.nav-tab:hover{color:#c8e6d0;background:rgba(255,255,255,0.04)}
+.nav-tab.on{color:#fff;border-bottom-color:var(--g3)}
+.nav-tab .badge{background:var(--r1);color:#fff;border-radius:3px;font-size:9px;padding:1px 5px}
+.nav-actions{padding:0 16px;display:flex;align-items:center;gap:8px;border-left:1px solid rgba(255,255,255,0.1)}
+/* LAYOUT */
+.page{display:none;padding:20px;max-width:1400px;margin:0 auto}
+.page.on{display:block}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.g6{display:grid;grid-template-columns:repeat(6,1fr);gap:10px}
+@media(max-width:768px){.g2,.g3,.g4,.g6{grid-template-columns:1fr}}
+/* CARDS */
+.card{background:var(--card);border:0.5px solid var(--border);border-radius:12px;padding:18px;margin-bottom:14px;overflow:hidden}
+.card-t{font-size:11px;font-weight:600;letter-spacing:0.7px;color:var(--g2);text-transform:uppercase;margin-bottom:14px;padding-bottom:8px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
+.card-t .ico{width:20px;height:20px;border-radius:4px;background:var(--g5);display:flex;align-items:center;justify-content:center;font-size:11px}
+/* METRICS */
+.metric{background:var(--surface);border-radius:8px;padding:14px}
+.metric .lbl{font-size:10px;color:var(--txt3);letter-spacing:0.3px;margin-bottom:4px;text-transform:uppercase}
+.metric .val{font-size:22px;font-weight:700;line-height:1;color:var(--txt)}
+.metric .sub{font-size:11px;color:var(--txt3);margin-top:3px}
+.metric.g .val{color:var(--g2)}
+.metric.r .val{color:var(--r1)}
+.metric.o .val{color:var(--o1)}
+.metric.b .val{color:var(--b2)}
+.metric.m .val{color:var(--m1)}
+/* INPUTS */
+.sect{font-size:10px;font-weight:600;letter-spacing:0.6px;color:var(--txt3);text-transform:uppercase;margin:16px 0 8px;padding-bottom:5px;border-bottom:1px solid var(--border)}
+.ig{display:flex;flex-direction:column;gap:4px;margin-bottom:8px}
+.ig label{font-size:11px;color:var(--txt2)}
+.ig input,.ig select{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:7px 10px;color:var(--txt);font-size:13px;font-family:inherit;width:100%}
+.ig input:disabled{
+  color:#111 !important;
+  opacity:1 !important;
+}
+.ig input:focus,.ig select:focus{outline:2px solid var(--g3);border-color:var(--g3)}
+.ig input:disabled{background:var(--g5)!important;color:#1a5c38!important;font-weight:700;-webkit-text-fill-color:#1a5c38!important}
+.ig .hint{font-size:10px;color:var(--txt3)}
+.ig2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.ig3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.row{display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap}
+.row label{font-size:11px;color:var(--txt2);flex-shrink:0;width:auto;min-width:120px;max-width:200px}
+.row input[type=range]{flex:1;accent-color:var(--g2)}
+.row .rv{font-size:12px;font-weight:600;min-width:70px;text-align:right}
+/* BUTTONS */
+.btn{border:1px solid var(--border);border-radius:6px;padding:7px 16px;font-size:12px;cursor:pointer;background:none;color:var(--txt);font-family:inherit;transition:all 0.12s;display:inline-flex;align-items:center;gap:6px}
+.btn:hover{background:var(--surface)}
+.btn.primary{background:var(--g1);color:#fff;border-color:var(--g1)}
+.btn.primary:hover{background:var(--g2)}
+.btn.danger{border-color:var(--r1);color:var(--r1)}
+.btn.sm{padding:4px 10px;font-size:11px}
+/* ALERTS */
+.alert{border-radius:8px;padding:12px 16px;font-size:13px;margin:10px 0;border-left:3px solid}
+.alert.g{background:var(--g5);border-color:var(--g2);color:#0d3a20}
+.alert.r{background:var(--r2);border-color:var(--r1);color:#7a1a1a}
+.alert.o{background:var(--o2);border-color:var(--o1);color:#7a3a0a}
+.alert.b{background:var(--b4);border-color:var(--b2);color:#0a2a6a}
+.alert.m{background:var(--m2);border-color:var(--m1);color:#3a2070}
+/* TABLES */
+.tbl{width:100%;border-collapse:collapse;font-size:12px;white-space:nowrap}
+.tbl th{background:var(--g1);color:#fff;padding:8px 10px;text-align:left;font-size:11px;font-weight:600}
+.tbl td{padding:7px 10px;border-bottom:1px solid var(--border)}
+.tbl tr:nth-child(even) td{background:var(--surface)}
+.tbl tr.tot td{font-weight:700;background:var(--g5);color:var(--g1);border-top:2px solid var(--g2)}
+.tbl .r{text-align:right}
+.tbl .pos{color:var(--g2);font-weight:600}
+.tbl .neg{color:var(--r1);font-weight:600}
+/* BARS */
+.bar-row{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.bar-lbl{width:140px;font-size:11px;color:var(--txt2);text-align:right;flex-shrink:0}
+.bar-track{flex:1;background:var(--surface);border-radius:4px;height:18px;overflow:hidden}
+.bar-fill{height:100%;border-radius:4px;display:flex;align-items:center;padding:0 6px;font-size:10px;font-weight:600;color:#fff;transition:width 0.4s}
+.bar-val{width:80px;font-size:11px;color:var(--txt);flex-shrink:0}
+/* SENSITIVITY */
+.sens th{background:var(--g1);color:#fff;padding:6px 8px;font-size:11px;text-align:center;font-weight:600}
+.sens td{padding:5px 8px;border:1px solid var(--border);font-size:11px;text-align:center}
+.sens .rh{background:var(--surface);font-weight:600;font-size:11px;color:var(--txt2);text-align:left;padding-left:10px}
+.sc5{background:#c8e6d0;color:#1a5c38;font-weight:700}
+.sc4{background:#e8f5ee;color:#2e7d52}
+.sc3{background:#fef0e0;color:#7a3a0a}
+.sc2{background:#fdecea;color:#7a1a1a}
+.sc0{background:#1a5c38;color:#fff;font-weight:700}
+/* PROGRESS */
+.prog{background:var(--surface);border-radius:4px;height:8px;overflow:hidden;margin:4px 0}
+.prog-fill{height:100%;border-radius:4px;transition:width 0.3s}
+/* TABS */
+.itabs{display:flex;border-bottom:1px solid var(--border);margin-bottom:16px;gap:0}
+.itab{padding:8px 16px;font-size:12px;cursor:pointer;border:none;background:none;color:var(--txt3);border-bottom:2px solid transparent;margin-bottom:-1px;font-family:inherit}
+.itab.on{color:var(--g1);border-bottom-color:var(--g2);font-weight:600}
+/* BADGES */
+.bdg{display:inline-block;padding:2px 7px;border-radius:3px;font-size:10px;font-weight:700;letter-spacing:0.3px}
+.bdg.g{background:var(--g5);color:var(--g1)}
+.bdg.r{background:var(--r2);color:var(--r1)}
+.bdg.o{background:var(--o2);color:var(--o1)}
+.bdg.b{background:var(--b4);color:var(--b1)}
+.bdg.m{background:var(--m2);color:var(--m1)}
+/* ESG METER */
+.esg-meter{display:flex;height:24px;border-radius:6px;overflow:hidden;margin:8px 0}
+.esg-seg{display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;transition:width 0.4s}
+/* REPORT */
+
+/* USER GUIDE */
+.guide-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:10000;display:flex;align-items:center;justify-content:center;padding:16px}
+.guide-box{background:var(--card);border-radius:16px;max-width:560px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,0.4)}
+.guide-header{background:linear-gradient(135deg,#1a5c38,#1a3a6b);color:#fff;padding:24px;border-radius:16px 16px 0 0}
+.guide-header h2{font-size:20px;margin-bottom:4px}
+.guide-header p{font-size:13px;opacity:0.8}
+.guide-body{padding:20px}
+.guide-step{display:flex;gap:14px;margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid var(--border)}
+.guide-step:last-child{border-bottom:none;margin-bottom:0}
+.guide-step-num{width:32px;height:32px;border-radius:50%;background:var(--g1);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;flex-shrink:0;margin-top:2px}
+.guide-step-content h3{font-size:14px;font-weight:600;margin-bottom:4px;color:var(--txt)}
+.guide-step-content p{font-size:13px;color:var(--txt2);line-height:1.5}
+.guide-step-content .tip{font-size:11px;background:var(--g5);color:var(--g1);padding:4px 8px;border-radius:4px;margin-top:6px;display:inline-block}
+.guide-footer{padding:16px 20px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;background:var(--surface);border-radius:0 0 16px 16px}
+@media print{
+  .nav,.btn,.nav-actions{display:none!important}
+  .page{display:block!important;padding:10px}
+  .card{break-inside:avoid}
+}
+.pr-header{background:linear-gradient(135deg,var(--g1),var(--b1));color:#fff;padding:24px;border-radius:12px;margin-bottom:20px}
+.pr-header h2{font-size:22px;margin-bottom:4px}
+.pr-header p{font-size:13px;opacity:0.8}
+.score-circle{width:90px;height:90px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;border:4px solid}
+/* NODO CARD */
+.nodo-card{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:12px;margin-bottom:8px;display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr 1fr 80px;gap:8px;align-items:center;font-size:12px}
+.nodo-card.hdr{background:var(--surface);font-size:10px;font-weight:700;text-transform:uppercase;color:var(--txt3);letter-spacing:0.4px}
+/* TIMELINE */
+.tl{padding-left:20px;position:relative}
+.tl::before{content:'';position:absolute;left:7px;top:0;bottom:0;width:1px;background:var(--border)}
+.tl-item{position:relative;margin-bottom:16px}
+.tl-dot{position:absolute;left:-16px;top:4px;width:10px;height:10px;border-radius:50%;border:2px solid var(--g2);background:var(--card)}
+.tl-dot.done{background:var(--g2)}
+.tl-y{font-size:10px;color:var(--g2);font-weight:700;margin-bottom:2px}
+.tl-t{font-size:13px;font-weight:600;margin-bottom:2px}
+.tl-d{font-size:12px;color:var(--txt2)}
+</style>
+</head>
+
+</head>
+<body>
+<!-- USER GUIDE MODAL -->
+<div class="guide-overlay" id="guide-modal" style="display:none">
+  <div class="guide-box">
+    <div class="guide-header">
+      <h2>🌿 Bienvenido a AgroTech Invest</h2>
+      <p>Simulador de análisis de inversión para tecnología agroalimentaria</p>
+    </div>
+    <div class="guide-body">
+      <div class="guide-step">
+        <div class="guide-step-num">1</div>
+        <div class="guide-step-content">
+          <h3>⚙ Configuración — empezá acá</h3>
+          <p>Seleccioná el país (el tipo de cambio se carga automáticamente). Ingresá los <strong>litros por día</strong>, los <strong>días operativos por mes</strong> y el <strong>precio de venta</strong> que esperás obtener por litro. Completá la inversión inicial desglosada.</p>
+          <span class="tip">✓ Los 4 indicadores del fondo se actualizan automáticamente</span>
+        </div>
+      </div>
+      <div class="guide-step">
+        <div class="guide-step-num">2</div>
+        <div class="guide-step-content">
+          <h3>💰 Costos — ajustá los valores reales</h3>
+          <p>Los valores por defecto son referencias internacionales. Ajustá al menos: <strong>leche cruda</strong> (= precio que pagás al productor), <strong>sachet</strong>, <strong>energía</strong>, <strong>mano de obra</strong> y <strong>alquiler</strong>. El resto podés dejarlo y ajustar después.</p>
+          <span class="tip">✓ España: el impuesto plástico UE ya está incluido</span>
+        </div>
+      </div>
+      <div class="guide-step">
+        <div class="guide-step-num">3</div>
+        <div class="guide-step-content">
+          <h3>📊 Análisis Micro — ¿es rentable el nodo?</h3>
+          <p>Muestra el resultado mensual, el <strong>punto de equilibrio</strong> (cuántos litros necesitás vender para no perder) y la comparativa vs. vender la leche sin procesar.</p>
+          <span class="tip">✓ Si el resultado es negativo, probá aumentar el precio o el volumen</span>
+        </div>
+      </div>
+      <div class="guide-step">
+        <div class="guide-step-num">4</div>
+        <div class="guide-step-content">
+          <h3>📈 Flujo de Caja — VAN, TIR y Payback</h3>
+          <p>El gráfico de 36 meses muestra <strong>cuándo recuperás la inversión</strong>. La tabla anualizada incluye el flujo descontado. La curva VAN vs. tasa te muestra la robustez del proyecto.</p>
+          <span class="tip">✓ VAN positivo + TIR mayor a la tasa = proyecto viable</span>
+        </div>
+      </div>
+      <div class="guide-step">
+        <div class="guide-step-num">5</div>
+        <div class="guide-step-content">
+          <h3>🎯 Escenarios — stress test del proyecto</h3>
+          <p>La tabla de sensibilidad 5×5 muestra el VAN para distintas combinaciones de precio y volumen. El simulador con sliders permite explorar cualquier combinación en tiempo real.</p>
+          <span class="tip">✓ Celdas verdes = proyecto viable en ese escenario</span>
+        </div>
+      </div>
+      <div class="guide-step">
+        <div class="guide-step-num">6</div>
+        <div class="guide-step-content">
+          <h3>🌐 Red de Nodos — análisis de escala</h3>
+          <p>Agregá múltiples nodos con precios y costos distintos (distintas regiones). La proyección temporal muestra la expansión a 10 años con 3 modelos de crecimiento.</p>
+          <span class="tip">✓ Los nodos se pueden renombrar y editar</span>
+        </div>
+      </div>
+      <div class="guide-step">
+        <div class="guide-step-num">7</div>
+        <div class="guide-step-content">
+          <h3>🌿 Huella Ambiental — fondos verdes</h3>
+          <p>Calcula la huella de carbono y hídrica con benchmarks científicos. Determina automáticamente la elegibilidad para fondos FEADER, LIFE, CDTI y banca ética.</p>
+          <span class="tip">✓ Valores por defecto = benchmarks validados para pequeña escala europea</span>
+        </div>
+      </div>
+      <div class="guide-step">
+        <div class="guide-step-num">8</div>
+        <div class="guide-step-content">
+          <h3>📋 Reporte — exportar el análisis</h3>
+          <p>Genera un informe completo con score financiero (0-100) + score ESG, conclusión automática y brechas críticas. <strong>Ctrl+P → Guardar como PDF</strong> para exportar.</p>
+          <span class="tip">✓ Usar 💾 para guardar el proyecto como JSON y 📂 para cargarlo después</span>
+        </div>
+      </div>
+    </div>
+    <div class="guide-footer">
+      <label style="font-size:12px;color:var(--txt3);cursor:pointer">
+        <input type="checkbox" id="guide-no-show" style="margin-right:6px">
+        No mostrar al abrir
+      </label>
+      <button class="btn primary" onclick="closeGuide()">Comenzar →</button>
+    </div>
+  </div>
+</div>
+
+
+<nav class="nav">
+  <div class="nav-brand">
+    <div class="logo">AT</div>
+    <div><h1>AgroTech Invest</h1><p>Análisis de Inversión Tecnológica Agroalimentaria</p></div>
+  </div>
+  <div class="nav-tabs">
+    <button class="nav-tab on" onclick="showPage('config',this)">⚙ Configuración</button>
+    <button class="nav-tab" onclick="showPage('costos',this)">💰 Costos</button>
+    <button class="nav-tab" onclick="showPage('micro',this)">📊 Análisis Micro</button>
+    <button class="nav-tab" onclick="showPage('flujo',this)">📈 Flujo de Caja</button>
+    <button class="nav-tab" onclick="showPage('escenarios',this)">🎯 Escenarios</button>
+    <button class="nav-tab" onclick="showPage('red',this)">🌐 Red de Nodos</button>
+    <button class="nav-tab" onclick="showPage('esg',this)">🌿 Huella Ambiental</button>
+    <button class="nav-tab" onclick="showPage('reporte',this)">📋 Reporte</button>
+  </div>
+  <div class="nav-actions">
+    <button class="btn sm" style="background:#2e7d52;color:#fff;border-color:#2e7d52;font-weight:700" onclick="recalc();showToast('Calculado ✓')" title="Recalcular todo">▶ Calcular</button>
+    <button class="btn sm" onclick="openGuide()" title="Guía de uso">❓</button>
+    <button class="btn sm" onclick="loadProject()" title="Cargar proyecto">📂</button>
+    <button class="btn sm" onclick="saveProject()" title="Guardar proyecto">💾</button>
+    <button class="btn sm" onclick="exportCSV()" title="Exportar CSV">📊</button>
+    <button class="btn sm primary" onclick="generarReporte()">📋 Reporte</button>
+  </div>
+</nav>
+
+<!-- ============ CONFIG ============ -->
+<div class="page on" id="page-config">
+<div class="g3">
+<div class="card">
+  <div class="card-t">Proyecto y Territorio</div>
+  <div class="ig"><label>Nombre del proyecto</label><input type="text" id="cfg-nombre" value="Pasteurizador Sachet INTA-UBA" oninput="recalc()"></div>
+  <div class="ig2">
+    <div class="ig"><label>País</label>
+      <select id="cfg-pais" onchange="setPais()">
+        <option value="ES">🇪🇸 España</option>
+        <option value="AR">🇦🇷 Argentina</option>
+        <option value="HN">🇭🇳 Honduras</option>
+        <option value="UY">🇺🇾 Uruguay</option>
+        <option value="MX">🇲🇽 México</option>
+        <option value="OTHER">🌍 Otro</option>
+      </select>
+    </div>
+    <div class="ig"><label>Región / Localidad</label><input type="text" id="cfg-region" value="La Rioja" oninput="recalc()"></div>
+    <div class="ig"><label>Moneda local</label><input type="text" id="cfg-moneda" value="EUR" oninput="recalc()"></div>
+    <div class="ig"><label>Tipo de cambio (1 USD =)</label><input type="number" id="cfg-tc" value="0.92" step="0.01" oninput="recalc()"></div>
+  </div>
+  <div class="ig2">
+    <div class="ig"><label>Tecnología</label><input type="text" id="cfg-tech" value="Pasteurizador LTLT 63°C/30min" oninput="recalc()"></div>
+    <div class="ig"><label>Producto final</label><input type="text" id="cfg-producto" value="Leche pasteurizada sachet" oninput="recalc()"></div>
+  </div>
+  <div class="ig"><label>Fecha del análisis</label><input type="date" id="cfg-fecha" oninput="recalc()"></div>
+</div>
+
+<div class="card">
+  <div class="card-t">Producción</div>
+  <div class="ig2">
+    <div class="ig"><label>Litros / día</label><input type="number" id="p-litros" value="100" min="1" oninput="recalc()"></div>
+    <div class="ig"><label>Días operativos / mes</label><input type="number" id="p-dias" value="20" min="1" max="31" oninput="recalc()"></div>
+    <div class="ig"><label>% Capacidad utilizada</label><input type="number" id="p-util" value="80" min="10" max="100" oninput="recalc()"></div>
+    <div class="ig"><label>Litros efectivos / mes</label><input type="number" id="p-lef" value="" disabled style="background:var(--g5);font-weight:700"></div>
+  </div>
+  <div class="ig"><label>Precio de venta (USD / litro)</label><input type="number" id="p-precio" value="1.30" step="0.05" oninput="recalc()"></div>
+  <div class="ig"><label>Precio venta en moneda local</label><input type="number" id="p-precio-local" value="" disabled style="background:var(--g5)"></div>
+  <div class="ig"><label>Precio leche cruda al tambo (USD/L)</label><input type="number" id="p-cruda" value="0.36" step="0.01" oninput="recalc()"></div>
+  <div class="ig"><label>Especie / tipo de leche</label>
+    <select id="p-especie" onchange="recalc()">
+      <option value="vaca">Vaca</option><option value="cabra">Cabra</option><option value="oveja">Oveja</option>
+    </select>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-t">Inversión Inicial (USD)</div>
+  <div class="ig2">
+    <div class="ig"><label>Equipo pasteurizador</label><input type="number" id="inv-equipo" value="8000" oninput="recalc()"></div>
+    <div class="ig"><label>Equipo de frío</label><input type="number" id="inv-frio" value="2000" oninput="recalc()"></div>
+    <div class="ig"><label>Adecuación sala</label><input type="number" id="inv-sala" value="3000" oninput="recalc()"></div>
+    <div class="ig"><label>Habilitaciones y CE</label><input type="number" id="inv-hab" value="1500" oninput="recalc()"></div>
+    <div class="ig"><label>Software trazabilidad</label><input type="number" id="inv-soft" value="500" oninput="recalc()"></div>
+    <div class="ig"><label>Capital de trabajo</label><input type="number" id="inv-cw" value="2000" oninput="recalc()"></div>
+    <div class="ig"><label>Transporte / instalación</label><input type="number" id="inv-transporte" value="800" oninput="recalc()"></div>
+    <div class="ig"><label>Otros</label><input type="number" id="inv-otros" value="500" oninput="recalc()"></div>
+  </div>
+  <div style="background:var(--g5);border-radius:6px;padding:10px;margin-top:8px">
+    <div style="font-size:11px;color:var(--txt3)">TOTAL INVERSIÓN</div>
+    <div style="font-size:22px;font-weight:700;color:var(--g1)" id="inv-total-disp">—</div>
+  </div>
+</div>
+</div>
+
+<div class="card">
+  <div class="card-t">Parámetros Financieros</div>
+  <div class="g2">
+    <div><div class="row"><label>Tasa de descuento anual (%)</label><input type="range" id="cfg-tasa" min="1" max="25" step="0.5" value="6" oninput="syncR('cfg-tasa','rv-tasa',function(v){return v+'%'});recalc()"><span class="rv" id="rv-tasa">6%</span></div></div>
+    <div><div class="row"><label>Vida útil equipo (años)</label><input type="range" id="cfg-vida" min="5" max="25" step="1" value="10" oninput="syncR('cfg-vida','rv-vida',function(v){return v+' a'});recalc()"><span class="rv" id="rv-vida">10 a</span></div></div>
+    <div><div class="row"><label>Inflación anual costos (%)</label><input type="range" id="cfg-infl" min="0" max="15" step="0.5" value="2.5" oninput="syncR('cfg-infl','rv-infl',function(v){return v+'%'});recalc()"><span class="rv" id="rv-infl">2.5%</span></div></div>
+    <div><div class="row"><label>Crecimiento precio venta/año (%)</label><input type="range" id="cfg-crec" min="0" max="10" step="0.5" value="1.5" oninput="syncR('cfg-crec','rv-crec',function(v){return v+'%'});recalc()"><span class="rv" id="rv-crec">1.5%</span></div></div>
+  </div>
+</div>
+
+<div class="g4">
+  <div class="metric g"><div class="lbl">Inversión Total</div><div class="val" id="k-inv">—</div><div class="sub">USD</div></div>
+  <div class="metric b"><div class="lbl">Ingreso Bruto / Mes</div><div class="val" id="k-ing">—</div><div class="sub">USD</div></div>
+  <div class="metric"><div class="lbl">Litros efectivos / mes</div><div class="val" id="k-lef">—</div><div class="sub">litros</div></div>
+  <div class="metric"><div class="lbl">Precio de venta</div><div class="val" id="k-precio">—</div><div class="sub">USD / litro</div></div>
+</div>
+</div>
+
+<!-- ============ COSTOS ============ -->
+<div class="page" id="page-costos">
+<div class="g2">
+<div class="card">
+  <div class="card-t">Costos Variables (USD / litro)</div>
+  <div class="sect">Materia prima</div>
+  <div class="ig2">
+    <div class="ig"><label>Leche cruda (costo oportunidad)</label><input type="number" id="cv-leche" value="0.36" step="0.01" oninput="recalc()"><span class="hint">= precio al tambo</span></div>
+    <div class="ig"><label>Sachet / envase</label><input type="number" id="cv-sachet" value="0.07" step="0.005" oninput="recalc()"></div>
+  </div>
+  <div class="sect">Insumos de proceso</div>
+  <div class="ig3">
+    <div class="ig"><label>Energía eléctrica</label><input type="number" id="cv-energia" value="0.025" step="0.005" oninput="recalc()"></div>
+    <div class="ig"><label>Agua proceso</label><input type="number" id="cv-agua" value="0.003" step="0.001" oninput="recalc()"></div>
+    <div class="ig"><label>Detergentes / desinfect.</label><input type="number" id="cv-deterg" value="0.005" step="0.001" oninput="recalc()"></div>
+    <div class="ig"><label>Kit fosfatasa alcalina</label><input type="number" id="cv-fosf" value="0.008" step="0.001" oninput="recalc()"></div>
+    <div class="ig"><label>Análisis lab / lote</label><input type="number" id="cv-lab" value="0.010" step="0.001" oninput="recalc()"></div>
+    <div class="ig"><label>Control materia prima</label><input type="number" id="cv-ctrl" value="0.003" step="0.001" oninput="recalc()"></div>
+  </div>
+  <div class="sect">Logística</div>
+  <div class="ig2">
+    <div class="ig"><label>Distribución / reparto</label><input type="number" id="cv-reparto" value="0.05" step="0.01" oninput="recalc()"></div>
+    <div class="ig"><label>Embalaje secundario</label><input type="number" id="cv-embal" value="0.005" step="0.001" oninput="recalc()"></div>
+  </div>
+  <div class="sect">Regulatorio y licencias</div>
+  <div class="ig2">
+    <div class="ig"><label>Impuesto plástico UE (€0.45/kg)</label><input type="number" id="cv-impuesto" value="0.003" step="0.001" oninput="recalc()"><span class="hint">≈7g/L sachet × €0.45/kg</span></div>
+    <div class="ig"><label>Royalty / licencia tecnológica</label><input type="number" id="cv-royalty" value="0.015" step="0.005" oninput="recalc()"></div>
+    <div class="ig"><label>Sistema gestión 4.0 (por litro)</label><input type="number" id="cv-soft" value="0.004" step="0.001" oninput="recalc()"></div>
+    <div class="ig"><label>Otros variables</label><input type="number" id="cv-otros" value="0.005" step="0.001" oninput="recalc()"></div>
+  </div>
+  <div style="background:var(--g5);border-radius:6px;padding:10px;margin-top:10px" class="g2">
+    <div><div style="font-size:10px;color:var(--txt3)">COSTO VARIABLE TOTAL</div><div style="font-size:18px;font-weight:700;color:var(--g1)" id="cv-total">—</div></div>
+    <div><div style="font-size:10px;color:var(--txt3)">SOBRE PRECIO VENTA</div><div style="font-size:18px;font-weight:700;color:var(--txt)" id="cv-pct">—</div></div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-t">Costos Fijos (USD / mes)</div>
+  <div class="sect">Mano de obra</div>
+  <div class="ig2">
+    <div class="ig"><label>Operario producción</label><input type="number" id="cf-op" value="900" oninput="recalc()"></div>
+    <div class="ig"><label>Responsable calidad</label><input type="number" id="cf-cal" value="300" oninput="recalc()"></div>
+    <div class="ig"><label>Administración / gestión</label><input type="number" id="cf-adm" value="200" oninput="recalc()"></div>
+    <div class="ig"><label>Director técnico (part)</label><input type="number" id="cf-dt" value="150" oninput="recalc()"></div>
+  </div>
+  <div class="sect">Instalaciones</div>
+  <div class="ig2">
+    <div class="ig"><label>Alquiler sala</label><input type="number" id="cf-alq" value="300" oninput="recalc()"></div>
+    <div class="ig"><label>Seguro RC alimentaria</label><input type="number" id="cf-seg" value="80" oninput="recalc()"></div>
+  </div>
+  <div class="sect">Equipos y tecnología</div>
+  <div class="ig2">
+    <div class="ig"><label>Mantenimiento preventivo</label><input type="number" id="cf-mant" value="120" oninput="recalc()"></div>
+    <div class="ig"><label>Software / trazabilidad SaaS</label><input type="number" id="cf-saas" value="50" oninput="recalc()"></div>
+    <div class="ig"><label>Amortización (calculada)</label><input type="number" id="cf-amort" value="" disabled style="background:var(--g5)"></div>
+    <div class="ig"><label>Calibración / metrología</label><input type="number" id="cf-calib" value="30" oninput="recalc()"></div>
+  </div>
+  <div class="sect">Regulatorio y comercial</div>
+  <div class="ig2">
+    <div class="ig"><label>Tasas habilitaciones</label><input type="number" id="cf-tasas" value="30" oninput="recalc()"></div>
+    <div class="ig"><label>Auditorías APPCC</label><input type="number" id="cf-audit" value="50" oninput="recalc()"></div>
+    <div class="ig"><label>Marketing / comunicación</label><input type="number" id="cf-mkt" value="80" oninput="recalc()"></div>
+    <div class="ig"><label>Soporte técnico externo</label><input type="number" id="cf-sop" value="50" oninput="recalc()"></div>
+    <div class="ig"><label>Otros fijos</label><input type="number" id="cf-otros" value="50" oninput="recalc()"></div>
+  </div>
+  <div style="background:var(--g5);border-radius:6px;padding:10px;margin-top:10px" class="g2">
+    <div><div style="font-size:10px;color:var(--txt3)">COSTO FIJO TOTAL / MES</div><div style="font-size:18px;font-weight:700;color:var(--g1)" id="cf-total">—</div></div>
+    <div><div style="font-size:10px;color:var(--txt3)">COSTO FIJO / LITRO</div><div style="font-size:18px;font-weight:700;color:var(--txt)" id="cf-litro">—</div></div>
+  </div>
+</div>
+</div>
+
+<div class="card">
+  <div class="card-t">Composición del Costo Total por Litro</div>
+  <div id="bars-costo"></div>
+  <p style="font-size:11px;color:var(--txt3);margin-top:8px" id="costo-resumen"></p>
+</div>
+</div>
+
+<!-- ============ MICRO ============ -->
+<div class="page" id="page-micro">
+<div class="g4" style="margin-bottom:16px">
+  <div class="metric" id="km-costo"><div class="lbl">Costo Total / Litro</div><div class="val">—</div><div class="sub">USD</div></div>
+  <div class="metric" id="km-margen"><div class="lbl">Margen Bruto / Litro</div><div class="val">—</div><div class="sub">USD</div></div>
+  <div class="metric" id="km-margen-pct"><div class="lbl">Margen Bruto %</div><div class="val">—</div><div class="sub">sobre precio venta</div></div>
+  <div class="metric" id="km-be"><div class="lbl">Break-even volumen</div><div class="val">—</div><div class="sub">litros / mes</div></div>
+</div>
+<div class="g2">
+<div class="card">
+  <div class="card-t">Resultado Mensual</div>
+  <table class="tbl" id="tbl-resultado"></table>
+  <div id="alert-micro" class="alert" style="margin-top:10px"></div>
+</div>
+<div class="card">
+  <div class="card-t">Punto de Equilibrio</div>
+  <div class="sect">Break-even en volumen (litros/mes)</div>
+  <div id="bars-be"></div>
+  <div class="sect" style="margin-top:14px">Precio mínimo de break-even</div>
+  <div style="font-size:24px;font-weight:700;color:var(--b2);margin:6px 0" id="be-precio-min">—</div>
+  <div class="prog"><div class="prog-fill" id="be-prog" style="background:var(--g2)"></div></div>
+  <p style="font-size:11px;color:var(--txt3);margin-top:4px" id="be-prog-txt"></p>
+  <div class="sect" style="margin-top:14px">Indicadores de retorno</div>
+  <div class="g2" style="gap:8px">
+    <div class="metric" id="km-roi"><div class="lbl">ROI simple</div><div class="val">—</div><div class="sub">% sobre inversión</div></div>
+    <div class="metric" id="km-pb"><div class="lbl">Payback</div><div class="val">—</div><div class="sub">meses</div></div>
+    <div class="metric" id="km-van"><div class="lbl">VAN</div><div class="val">—</div><div class="sub">USD</div></div>
+    <div class="metric" id="km-tir"><div class="lbl">TIR</div><div class="val">—</div><div class="sub">anual</div></div>
+  </div>
+</div>
+</div>
+<div class="card">
+  <div class="card-t">Comparativa: Venta Leche Cruda vs. Pasteurizada en Sachet</div>
+  <table class="tbl" id="tbl-comp"></table>
+  <p style="font-size:11px;color:var(--txt3);margin-top:8px" id="comp-txt"></p>
+</div>
+</div>
+
+<!-- ============ FLUJO ============ -->
+<div class="page" id="page-flujo">
+<div class="g4" style="margin-bottom:16px">
+  <div class="metric" id="kf-van"><div class="lbl">VAN</div><div class="val">—</div><div class="sub">USD</div></div>
+  <div class="metric" id="kf-tir"><div class="lbl">TIR</div><div class="val">—</div></div>
+  <div class="metric" id="kf-pb"><div class="lbl">Payback</div><div class="val">—</div><div class="sub">meses</div></div>
+  <div class="metric" id="kf-mult"><div class="lbl">VAN / Inversión</div><div class="val">—</div><div class="sub">multiplicador</div></div>
+</div>
+<div class="card">
+  <div class="card-t">Flujo de Caja Anualizado (USD)</div>
+  <div style="overflow-x:auto"><table class="tbl" id="tbl-flujo"></table></div>
+</div>
+<div class="g2">
+<div class="card">
+  <div class="card-t">Evolución mensual — primeros 36 meses</div>
+  <div style="position:relative;height:200px"><canvas id="chart-mensual" role="img" aria-label="Flujo de caja acumulado mensual primeros 36 meses">Evolución del flujo de caja acumulado durante los primeros 36 meses de operación, mostrando el punto de recuperación de la inversión.</canvas></div>
+</div>
+<div class="card">
+  <div class="card-t">VAN vs. Tasa de Descuento</div>
+  <div style="position:relative;height:200px"><canvas id="chart-van" role="img" aria-label="VAN según distintas tasas de descuento">VAN del proyecto en función de la tasa de descuento anual, con indicación de la Tasa Interna de Retorno.</canvas></div>
+</div>
+</div>
+</div>
+
+<!-- ============ ESCENARIOS ============ -->
+<div class="page" id="page-escenarios">
+<div class="card">
+  <div class="card-t">Tabla de Sensibilidad — VAN según Precio × Volumen</div>
+  <p style="font-size:12px;color:var(--txt2);margin-bottom:10px">VAN al final de la vida útil. Verde oscuro = escenario base actual.</p>
+  <div style="overflow-x:auto"><table class="sens" id="tbl-sens"></table></div>
+</div>
+<div class="g2">
+<div class="card">
+  <div class="card-t">Escenarios Predefinidos</div>
+  <table class="tbl" id="tbl-esc"></table>
+</div>
+<div class="card">
+  <div class="card-t">Simulador en tiempo real</div>
+  <div class="row"><label>Precio (USD/L)</label><input type="range" id="sim-p" min="0.5" max="3.0" step="0.05" value="1.30" oninput="updateSim()"><span class="rv" id="sim-p-v">$1.30</span></div>
+  <div class="row"><label>Volumen (% capacidad)</label><input type="range" id="sim-v" min="20" max="100" step="5" value="80" oninput="updateSim()"><span class="rv" id="sim-v-v">80%</span></div>
+  <div class="row"><label>Costo variable (USD/L)</label><input type="range" id="sim-cv" min="0.20" max="1.20" step="0.01" value="0.60" oninput="updateSim()"><span class="rv" id="sim-cv-v">$0.60</span></div>
+  <div class="row"><label>Costo fijo (USD/mes)</label><input type="range" id="sim-cf" min="500" max="6000" step="100" value="2160" oninput="updateSim()"><span class="rv" id="sim-cf-v">$2,160</span></div>
+  <hr style="border:none;border-top:1px solid var(--border);margin:12px 0">
+  <div class="g2" style="gap:8px">
+    <div class="metric" id="sim-van"><div class="lbl">VAN</div><div class="val">—</div></div>
+    <div class="metric" id="sim-tir"><div class="lbl">TIR</div><div class="val">—</div></div>
+    <div class="metric" id="sim-pb"><div class="lbl">Payback</div><div class="val">—</div></div>
+    <div class="metric" id="sim-mg"><div class="lbl">Margen/litro</div><div class="val">—</div></div>
+  </div>
+</div>
+</div>
+</div>
+
+<!-- ============ RED ============ -->
+<div class="page" id="page-red">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+  <p style="font-size:13px;color:var(--txt2)">Cada nodo puede tener precio y costo fijo propio. Litros y costo variable heredan del nodo tipo.</p>
+  <button class="btn primary" onclick="addNodo()">+ Agregar nodo</button>
+</div>
+<div class="nodo-card hdr"><span>Nombre / Región</span><span>Litros/mes</span><span>Precio USD/L</span><span>CF/mes</span><span>Resultado/mes</span><span>Acción</span></div>
+<div id="nodos-list"></div>
+<div class="card">
+  <div class="card-t">Resumen de la Red</div>
+  <div class="g4" id="red-kpis" style="margin-bottom:14px"></div>
+  <div id="red-tabla"></div>
+</div>
+<div class="card">
+  <div class="card-t">Proyección de expansión de la red</div>
+  <div class="g2" style="gap:10px;margin-bottom:14px">
+    <div class="ig"><label>Nodos objetivo (año 5)</label><input type="number" id="exp-nf" value="12" min="1" oninput="recalcRed()"></div>
+    <div class="ig"><label>Modelo crecimiento</label>
+      <select id="exp-modelo" onchange="recalcRed()">
+        <option value="logistico" selected>Logístico (S-curve)</option>
+        <option value="lineal">Lineal</option>
+        <option value="exponencial">Exponencial</option>
+      </select>
+    </div>
+  </div>
+  <div class="g2">
+    <div style="position:relative;height:180px"><canvas id="chart-red" role="img" aria-label="Evolución del número de nodos en el tiempo">Crecimiento de nodos de la red a lo largo de 10 años bajo el modelo seleccionado.</canvas></div>
+    <div style="position:relative;height:180px"><canvas id="chart-van-red" role="img" aria-label="VAN acumulado de la red por año">VAN acumulado de toda la red de nodos a lo largo de 10 años.</canvas></div>
+  </div>
+</div>
+</div>
+
+<!-- ============ ESG ============ -->
+<div class="page" id="page-esg">
+<div class="alert m">Este módulo calcula huellas ambientales usando benchmarks científicos validados (MDPI 2024, FAO, Codex). Los valores por defecto corresponden a pequeña escala lechera en Europa. Ajustá los factores si tenés datos propios de la explotación.</div>
+
+<div class="g3" style="margin-top:14px">
+<div class="card">
+  <div class="card-t">🌡 Factores de Huella de Carbono</div>
+  <div class="sect">Emisiones upstream (leche cruda)</div>
+  <div class="ig"><label>kg CO₂eq / litro de leche cruda</label><input type="number" id="esg-co2-cruda" value="1.29" step="0.01" oninput="recalcESG()"><span class="hint">Ref: 0.78–3.20 (MDPI 2024). Para pequeña escala europea: 1.29</span></div>
+  <div class="sect">Emisiones procesamiento</div>
+  <div class="ig2">
+    <div class="ig"><label>kg CO₂eq / kWh electricidad</label><input type="number" id="esg-co2-elec" value="0.20" step="0.01" oninput="recalcESG()"><span class="hint">España 2024: ~0.20. Argentina: ~0.38</span></div>
+    <div class="ig"><label>kWh / litro pasteurizado</label><input type="number" id="esg-kwh-litro" value="0.065" step="0.005" oninput="recalcESG()"><span class="hint">Ref pasteurización LTLT</span></div>
+    <div class="ig"><label>kg CO₂eq sachet (por litro)</label><input type="number" id="esg-co2-sachet" value="0.008" step="0.001" oninput="recalcESG()"><span class="hint">7g plástico × 1.1 kg CO₂/kg plástico</span></div>
+    <div class="ig"><label>kg CO₂eq distribución (por litro)</label><input type="number" id="esg-co2-dist" value="0.015" step="0.001" oninput="recalcESG()"><span class="hint">Según km recorridos</span></div>
+  </div>
+  <div class="sect">Comparativa (distribución industrial)</div>
+  <div class="ig"><label>kg CO₂eq / litro UHT industrial</label><input type="number" id="esg-co2-uht" value="0.45" step="0.01" oninput="recalcESG()"><span class="hint">Incluye ultra-pasteurización + transporte larga distancia</span></div>
+</div>
+
+<div class="card">
+  <div class="card-t">💧 Factores de Huella Hídrica</div>
+  <div class="sect">Agua upstream (leche cruda)</div>
+  <div class="ig"><label>Litros agua / litro leche cruda</label><input type="number" id="esg-h2o-cruda" value="628" step="10" oninput="recalcESG()"><span class="hint">Ref global: 628 L/L (UN DESA 2022). Varía con sistema forrajero</span></div>
+  <div class="sect">Agua en procesamiento</div>
+  <div class="ig2">
+    <div class="ig"><label>Litros agua directa / litro procesado</label><input type="number" id="esg-h2o-proc" value="3.31" step="0.1" oninput="recalcESG()"><span class="hint">Ref planta procesamiento: 3.31 L/L (MDPI 2024)</span></div>
+    <div class="ig"><label>% agua recuperada / reciclada</label><input type="number" id="esg-h2o-rec" value="0" step="5" min="0" max="100" oninput="recalcESG()"><span class="hint">0% = ningún sistema de recuperación</span></div>
+  </div>
+  <div class="sect">Comparativa</div>
+  <div class="ig"><label>L agua / L leche UHT industrial</label><input type="number" id="esg-h2o-uht" value="640" step="10" oninput="recalcESG()"><span class="hint">Ligeramente mayor por tratamiento extra</span></div>
+</div>
+
+<div class="card">
+  <div class="card-t">♻ Residuos y Plástico</div>
+  <div class="ig2">
+    <div class="ig"><label>g de plástico sachet / litro</label><input type="number" id="esg-plastico" value="7" step="0.5" oninput="recalcESG()"></div>
+    <div class="ig"><label>% plástico reciclado / recuperado</label><input type="number" id="esg-recicla" value="0" step="5" min="0" max="100" oninput="recalcESG()"></div>
+    <div class="ig"><label>Litros efluente / litro procesado</label><input type="number" id="esg-efluen" value="2.4" step="0.1" oninput="recalcESG()"></div>
+    <div class="ig"><label>% efluente tratado antes de descarga</label><input type="number" id="esg-trat" value="50" step="5" min="0" max="100" oninput="recalcESG()"></div>
+  </div>
+  <div class="sect">Logística</div>
+  <div class="ig2">
+    <div class="ig"><label>km promedio al punto de venta</label><input type="number" id="esg-km" value="25" step="5" oninput="recalcESG()"></div>
+    <div class="ig"><label>km cadena industrial equivalente</label><input type="number" id="esg-km-ind" value="400" step="50" oninput="recalcESG()"><span class="hint">Desde planta hasta góndola</span></div>
+  </div>
+</div>
+</div>
+
+<div class="card">
+  <div class="card-t">Resultados de Huella Ambiental — por litro producido</div>
+  <div class="g6" id="esg-kpis" style="margin-bottom:16px"></div>
+  <div class="g2">
+    <div>
+      <div class="sect">Huella de Carbono — comparativa (kg CO₂eq / litro)</div>
+      <div id="bars-co2"></div>
+    </div>
+    <div>
+      <div class="sect">Huella Hídrica — comparativa (L agua / L leche)</div>
+      <div id="bars-h2o"></div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-t">Elegibilidad para Financiamiento Verde y Fondos de Sostenibilidad</div>
+  <div id="esg-elegib"></div>
+</div>
+
+<div class="card">
+  <div class="card-t">Proyección de Impacto Ambiental Acumulado (según litros proyectados)</div>
+  <div id="esg-impacto"></div>
+</div>
+</div>
+
+<!-- ============ REPORTE ============ -->
+<div class="page" id="page-reporte">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+  <h2 style="font-size:16px;font-weight:600">Informe ejecutivo de análisis de inversión</h2>
+  <button class="btn primary" onclick="window.print()">🖨 Imprimir / Exportar PDF</button>
+</div>
+<div class="pr-header">
+  <div class="g2" style="align-items:center">
+    <div>
+      <h2 id="rp-titulo">—</h2>
+      <p id="rp-subtitulo">—</p>
+      <p style="margin-top:8px;font-size:12px;opacity:0.7" id="rp-fecha">—</p>
+    </div>
+    <div style="display:flex;gap:12px;justify-content:flex-end">
+      <div class="score-circle" id="score-financiero" style="border-color:#4a9e72"><div style="font-size:22px;font-weight:700" id="score-fin-val">—</div><div style="font-size:10px">Financiero</div></div>
+      <div class="score-circle" id="score-esg" style="border-color:#5b9fd4"><div style="font-size:22px;font-weight:700" id="score-esg-val">—</div><div style="font-size:10px">ESG</div></div>
+      <div class="score-circle" id="score-total" style="border-color:#fff"><div style="font-size:22px;font-weight:700" id="score-tot-val">—</div><div style="font-size:10px">Total</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="g3">
+<div class="card">
+  <div class="card-t">Resumen Financiero</div>
+  <table class="tbl" id="rp-fin"></table>
+</div>
+<div class="card">
+  <div class="card-t">Huella Ambiental</div>
+  <table class="tbl" id="rp-esg"></table>
+</div>
+<div class="card">
+  <div class="card-t">Conclusión y Recomendación</div>
+  <div id="rp-concl"></div>
+</div>
+</div>
+
+<div class="card">
+  <div class="card-t">Alertas y Brechas Críticas del Proyecto</div>
+  <div id="rp-brechas"></div>
+</div>
+
+<div class="card">
+  <div class="card-t">Elegibilidad para Fondos Externos</div>
+  <div id="rp-fondos"></div>
+</div>
+</div>
+
+<script>
+var chartMens=null,chartVanC=null,chartRed=null,chartVanRed=null;
+var nodos=[];
+var state={};
+
+function $(id){return document.getElementById(id)}
+function gv(id){return parseFloat($(id).value)||0}
+function gi(id){return parseInt($(id).value)||0}
+function gs(id){return $(id).value}
+function fmt(n,d){if(isNaN(n)||!isFinite(n))return '—';d=d===undefined?0:d;return n.toLocaleString('es',{minimumFractionDigits:d,maximumFractionDigits:d})}
+function fU(n){return(n<0?'-$':'$')+fmt(Math.abs(n),0)}
+function fU2(n){return(n<0?'-$':'$')+fmt(Math.abs(n),2)}
+function fU3(n){return(n<0?'-$':'$')+fmt(Math.abs(n),3)}
+function syncR(rid,vid,fn){ var el=$(vid); if(el) el.textContent=fn($(rid).value); }
+function safeSet(id,val){var el=$(id);if(el&&!el.disabled)el.textContent=val;}
+function safeSetVal(id,val){var el=$(id);if(el)el.value=val;}
+function metH(lbl,val,sub,cls){return '<div class="metric '+(cls||'')+'"><div class="lbl">'+lbl+'</div><div class="val">'+val+'</div><div class="sub">'+(sub||'')+'</div></div>'}
+function barH(lbl,val,max,color,suffix){var pct=max>0?Math.min(100,Math.max(0,val/max*100)):0;return '<div class="bar-row"><div class="bar-lbl">'+lbl+'</div><div class="bar-track"><div class="bar-fill" style="width:'+pct.toFixed(1)+'%;background:'+color+'"></div></div><div class="bar-val">'+(val+(suffix||''))+'</div></div>'}
+
+function showPage(id,btn){
+  document.querySelectorAll('.page').forEach(function(p){p.classList.remove('on')});
+  document.querySelectorAll('.nav-tab').forEach(function(t){t.classList.remove('on')});
+  $('page-'+id).classList.add('on');
+  if(btn)btn.classList.add('on');
+  recalc();
+}
+
+function setPais(){
+  var map={ES:['EUR',0.92,'España'],AR:['ARS',900,'Argentina'],HN:['HNL',24.7,'Honduras'],UY:['UYU',42,'Uruguay'],MX:['MXN',17,'México'],OTHER:['USD',1,'País']};
+  var v=map[gs('cfg-pais')];
+  $('cfg-moneda').value=v[0]; $('cfg-tc').value=v[1];
+  if($('cfg-region').value==='La Rioja'||$('cfg-region').value===''){ $('cfg-region').value=''; }
+  recalc();
+}
+
+function calcVAN(flows,rate){return flows.reduce(function(s,f,i){return s+f/Math.pow(1+rate,i)},0)}
+function calcTIR(flows){
+  var lo=-0.99,hi=20,mid,v,i=0;
+  while(i++<400){mid=(lo+hi)/2;v=calcVAN(flows,mid);if(Math.abs(v)<0.5)return mid;v>0?lo=mid:hi=mid;}
+  return mid;
+}
+
+function getParams(){
+  var litrosDia=gv('p-litros'),diasMes=gv('p-dias'),util=gv('p-util')/100;
+  var litrosMes=litrosDia*diasMes;
+  var litrosEfect=Math.round(litrosMes*util);
+  var precio=gv('p-precio'),cruda=gv('p-cruda');
+  var cv=gv('cv-leche')+gv('cv-sachet')+gv('cv-energia')+gv('cv-agua')+gv('cv-deterg')+gv('cv-fosf')+gv('cv-lab')+gv('cv-ctrl')+gv('cv-reparto')+gv('cv-embal')+gv('cv-impuesto')+gv('cv-royalty')+gv('cv-soft')+gv('cv-otros');
+  var vida=gv('cfg-vida'),tasa=gv('cfg-tasa')/100;
+  var invTotal=gv('inv-equipo')+gv('inv-frio')+gv('inv-sala')+gv('inv-hab')+gv('inv-soft')+gv('inv-cw')+gv('inv-transporte')+gv('inv-otros');
+  var amort=(gv('inv-equipo')+gv('inv-frio'))/vida/12;
+  var cfTotal=gv('cf-op')+gv('cf-cal')+gv('cf-adm')+gv('cf-dt')+gv('cf-alq')+gv('cf-seg')+gv('cf-mant')+gv('cf-saas')+amort+gv('cf-calib')+gv('cf-tasas')+gv('cf-audit')+gv('cf-mkt')+gv('cf-sop')+gv('cf-otros');
+  var costoLitro=litrosEfect>0?cv+cfTotal/litrosEfect:cv;
+  var margen=precio-costoLitro,margenPct=precio>0?margen/precio*100:0;
+  var ingMes=precio*litrosEfect,costoVarMes=cv*litrosEfect,resMes=ingMes-costoVarMes-cfTotal;
+  var beVol=(precio-cv)>0?cfTotal/(precio-cv):Infinity;
+  var bePrecio=litrosEfect>0?cv+cfTotal/litrosEfect:cv;
+  var flows=[-invTotal];
+  var infl=gv('cfg-infl')/100,crec=gv('cfg-crec')/100;
+  for(var y=1;y<=vida;y++){
+    var ingA=precio*litrosEfect*12*Math.pow(1+crec,y-1);
+    var egA=(cv*litrosEfect*12+cfTotal*12)*Math.pow(1+infl,y-1);
+    flows.push(ingA-egA);
+  }
+  var van=calcVAN(flows,tasa),tir=calcTIR(flows);
+  var pb=0,ac=-invTotal;
+  for(var i=1;i<flows.length;i++){ac+=flows[i];if(ac>=0){pb=i*12;break;}}
+  return {litrosDia,diasMes,litrosMes,litrosEfect,util,precio,cruda,cv,cfTotal,costoLitro,margen,margenPct,ingMes,costoVarMes,resMes,beVol,bePrecio,invTotal,amort,vida,tasa,flows,van,tir,pb,infl,crec};
+}
+
+function recalc(){
+  var P=getParams();
+  state=P;
+  var tc=gv('cfg-tc');
+  $('p-lef').value=fmt(P.litrosEfect);
+  $('p-precio-local').value=(P.precio*tc).toFixed(2);
+  $('cf-amort').value=fmt(P.amort,0);
+  var invT=P.invTotal;
+  $('inv-total-disp').textContent=fU(invT);
+  $('k-inv').querySelector('.val').textContent=fU(invT);
+  $('k-ing').querySelector('.val').textContent=fU(P.ingMes);
+  $('k-lef').querySelector('.val').textContent=fmt(P.litrosEfect);
+  $('k-precio').querySelector('.val').textContent=fU2(P.precio);
+  $('cv-total').textContent=fU3(P.cv);
+  $('cv-pct').textContent=P.precio>0?fmt(P.cv/P.precio*100,1)+'%':'—';
+  $('cf-total').textContent=fU(P.cfTotal);
+  $('cf-litro').textContent=P.litrosEfect>0?fU3(P.cfTotal/P.litrosEfect):'—';
+  recalcCostos(P);
+  recalcMicro(P);
+  recalcFlujo(P);
+  recalcEscenarios(P);
+  recalcRed();
+  recalcESG();
+  recalcReporte(P);
+}
+
+function recalcCostos(P){
+  var partidas=[
+    ['Leche cruda',gv('cv-leche'),'#1D9E75'],
+    ['Sachet / envase',gv('cv-sachet'),'#2563a8'],
+    ['Energía',gv('cv-energia'),'#d4680a'],
+    ['Mano de obra (prorrateada)',P.cfTotal/P.litrosEfect*0.55||0,'#1a3a6b'],
+    ['Distribución',gv('cv-reparto'),'#5b3fa6'],
+    ['Insumos proceso',gv('cv-agua')+gv('cv-deterg')+gv('cv-fosf')+gv('cv-lab')+gv('cv-ctrl'),'#4a9e72'],
+    ['Royalty + licencias',gv('cv-royalty')+gv('cv-soft')+gv('cv-impuesto'),'#888'],
+    ['CF resto prorrateado',P.cfTotal/P.litrosEfect*0.45||0,'#aaa'],
+  ];
+  var max=P.costoLitro||1;
+  $('bars-costo').innerHTML=partidas.map(function(x){return barH(x[0],fU3(x[1]),max,x[2]);}).join('');
+  $('costo-resumen').textContent='Costo total: '+fU2(P.costoLitro)+'/L | Precio: '+fU2(P.precio)+'/L | Margen: '+fU2(P.margen)+'/L ('+fmt(P.margenPct,1)+'%)';
+}
+
+function setM(id,val,sub,cls){var el=$(id);if(!el)return;el.className='metric '+(cls||'');var vEl=el.querySelector('.val');if(vEl)vEl.textContent=val;if(sub){var sEl=el.querySelector('.sub');if(sEl)sEl.textContent=sub;}}
+
+function recalcMicro(P){
+  setM('km-costo',fU2(P.costoLitro),'USD',P.costoLitro<P.precio?'g':'r');
+  setM('km-margen',fU2(P.margen),'USD',P.margen>0?'g':'r');
+  setM('km-margen-pct',fmt(P.margenPct,1)+'%','sobre precio',P.margenPct>20?'g':P.margenPct>0?'o':'r');
+  setM('km-be',P.beVol<99999?fmt(P.beVol,0)+' L':'No viable','litros/mes',P.litrosEfect>P.beVol?'g':'r');
+  setM('km-van',fU(P.van),'USD',P.van>0?'g':'r');
+  setM('km-tir',fmt(P.tir*100,1)+'%','anual',P.tir>P.tasa?'g':'r');
+  var roi=P.invTotal>0?(P.van/P.invTotal)*100:0;
+  setM('km-roi',fmt(roi,0)+'%','% sobre inversión',roi>50?'g':roi>0?'o':'r');
+  setM('km-pb',P.pb>0?P.pb+' m':'> horizonte','meses',P.pb>0&&P.pb<=P.vida*6?'g':'o');
+
+  var tblR='<thead><tr><th>Concepto</th><th class="r">USD/mes</th><th class="r">% ingreso</th></tr></thead><tbody>';
+  var rows=[
+    ['Ingresos brutos',P.ingMes,null],
+    ['– Costos variables ('+fU2(P.cv)+'/L × '+fmt(P.litrosEfect)+' L)',-P.costoVarMes,null],
+    ['= Utilidad bruta',P.ingMes-P.costoVarMes,null],
+    ['– Costos fijos (incl. amort.)',-P.cfTotal,null],
+    ['= Resultado operativo neto',P.resMes,null],
+  ];
+  rows.forEach(function(r,i){
+    var pct=P.ingMes>0?Math.abs(r[1])/P.ingMes*100:0;
+    var isTot=i===rows.length-1||i===2;
+    tblR+='<tr'+(isTot?' class="tot"':'')+'><td>'+r[0]+'</td><td class="r '+(r[1]>=0?'pos':'neg')+'">'+fU(r[1])+'</td><td class="r">'+fmt(pct,1)+'%</td></tr>';
+  });
+  tblR+='</tbody>';
+  $('tbl-resultado').innerHTML=tblR;
+
+  var ac=$('alert-micro');
+  if(P.resMes>0){ac.className='alert g';ac.textContent='Operación rentable. Resultado positivo de '+fU(P.resMes)+'/mes. VAN positivo de '+fU(P.van)+' a '+P.vida+' años.';}
+  else if(P.resMes>-300){ac.className='alert o';ac.textContent='Operación marginal. Resultado de '+fU(P.resMes)+'/mes. Ajustar precio o volumen para lograr viabilidad.';}
+  else{ac.className='alert r';ac.textContent='Operación deficitaria. Resultado de '+fU(P.resMes)+'/mes. Revisar estructura de costos o escala de producción.';}
+
+  var maxBE=Math.max(P.litrosMes,P.beVol<99999?P.beVol:P.litrosMes)*1.1;
+  $('bars-be').innerHTML=barH('Litros actuales',P.litrosEfect,maxBE,'#2563a8',' L')+barH('Break-even',P.beVol<99999?P.beVol:P.litrosMes,maxBE,'#c0392b',' L')+barH('Capacidad máx.',P.litrosMes,maxBE,'#4a9e72',' L');
+  $('be-precio-min').textContent=fU2(P.bePrecio);
+  var bePct=P.precio>0?Math.min(100,(P.bePrecio/P.precio)*100):100;
+  $('be-prog').style.width=bePct+'%';
+  $('be-prog').style.background=bePct<75?'#2e7d52':bePct<100?'#d4680a':'#c0392b';
+  $('be-prog-txt').textContent='El precio mínimo representa el '+fmt(bePct,1)+'% del precio actual. '+(bePct<75?'Margen de seguridad sólido.':bePct<100?'Margen ajustado, atención a variaciones de costo.':'Precio de venta insuficiente para cubrir costos.');
+
+  var crudaMes=P.cruda*P.litrosEfect;
+  $('tbl-comp').innerHTML='<thead><tr><th>Concepto</th><th class="r">Leche cruda</th><th class="r">Pasteurizada sachet</th><th class="r">Diferencia</th></tr></thead><tbody>'+
+    '<tr><td>Ingreso mensual</td><td class="r">'+fU(crudaMes)+'</td><td class="r">'+fU(P.ingMes)+'</td><td class="r pos">+'+fU(P.ingMes-crudaMes)+'</td></tr>'+
+    '<tr><td>Precio por litro</td><td class="r">'+fU2(P.cruda)+'</td><td class="r">'+fU2(P.precio)+'</td><td class="r pos">+'+fU2(P.precio-P.cruda)+'</td></tr>'+
+    '<tr><td>Prima sobre precio cruda</td><td class="r">—</td><td class="r">—</td><td class="r pos">+'+fmt((P.precio/P.cruda-1)*100,0)+'%</td></tr>'+
+    '<tr class="tot"><td>Resultado neto mensual</td><td class="r">'+fU(crudaMes*0.88)+'</td><td class="r '+(P.resMes>=0?'pos':'neg')+'">'+fU(P.resMes)+'</td><td class="r '+(P.resMes-crudaMes*0.88>=0?'pos':'neg')+'">'+fU(P.resMes-crudaMes*0.88)+'</td></tr>'+
+    '</tbody>';
+  $('comp-txt').textContent='El modelo de pasteurización genera '+fU2(P.precio-P.cruda)+' adicionales por litro ('+fmt((P.precio/P.cruda-1)*100,0)+'% prima). A '+fmt(P.litrosEfect)+' L/mes esto representa '+fU(P.ingMes-crudaMes)+' extra de ingreso bruto mensual.';
+}
+
+function recalcFlujo(P){
+  setM('kf-van',fU(P.van),'USD',P.van>0?'g':'r');
+  setM('kf-tir',fmt(P.tir*100,1)+'%','',P.tir>P.tasa?'g':'r');
+  setM('kf-pb',P.pb>0?P.pb+' m':'> horizonte','meses',P.pb>0&&P.pb<=P.vida*6?'g':'o');
+  setM('kf-mult',fmt(P.van/P.invTotal,2)+'x','multiplicador',P.van/P.invTotal>0.5?'g':P.van/P.invTotal>0?'o':'r');
+
+  var rows='<thead><tr><th>Año</th><th class="r">Ingresos</th><th class="r">Egresos</th><th class="r">Flujo Neto</th><th class="r">Flujo Acum.</th><th class="r">Flujo Desc.</th><th class="r">VAN Acum.</th></tr></thead><tbody>';
+  var acum=0,acumD=0;
+  for(var i=0;i<=P.vida;i++){
+    var fl=P.flows[i],flD=fl/Math.pow(1+P.tasa,i);
+    acum+=fl;acumD+=flD;
+    if(i===0){
+      rows+='<tr class="tot"><td>0</td><td class="r">—</td><td class="r neg">'+fU(P.invTotal)+'</td><td class="r neg">'+fU(fl)+'</td><td class="r neg">'+fU(acum)+'</td><td class="r neg">'+fU(flD)+'</td><td class="r neg">'+fU(acumD)+'</td></tr>';
+    }else{
+      var ingA=P.precio*P.litrosEfect*12*Math.pow(1+P.crec,i-1);
+      var egA=(P.cv*P.litrosEfect*12+P.cfTotal*12)*Math.pow(1+P.infl,i-1);
+      rows+='<tr><td>'+i+'</td><td class="r">'+fU(ingA)+'</td><td class="r">'+fU(egA)+'</td><td class="r '+(fl>=0?'pos':'neg')+'">'+fU(fl)+'</td><td class="r '+(acum>=0?'pos':'neg')+'">'+fU(acum)+'</td><td class="r '+(flD>=0?'pos':'neg')+'">'+fU(flD)+'</td><td class="r '+(acumD>=0?'pos':'neg')+'">'+fU(acumD)+'</td></tr>';
+    }
+  }
+  rows+='</tbody>';
+  $('tbl-flujo').innerHTML=rows;
+
+  var mLabels=['Inv.'],mData=[-P.invTotal];
+  var flujoMes=P.resMes;
+  for(var m=1;m<=36;m++){mLabels.push('M'+m);mData.push(mData[m-1]+flujoMes);}
+  if(chartMens)chartMens.destroy();
+  chartMens=new Chart($('chart-mensual').getContext('2d'),{type:'line',data:{labels:mLabels,datasets:[{label:'Flujo acumulado',data:mData,borderColor:'#2e7d52',backgroundColor:'rgba(46,125,82,0.07)',fill:true,tension:0.3,pointRadius:0,borderWidth:2},{label:'Cero',data:mLabels.map(function(){return 0}),borderColor:'#c0392b',borderWidth:1,borderDash:[5,4],pointRadius:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{font:{size:10},autoSkip:true,maxTicksLimit:12}},y:{ticks:{font:{size:10},callback:function(v){return '$'+Math.round(v/1000)+'k'}}}}}});
+
+  var tasas=[],vans=[];
+  for(var t=0;t<=0.5;t+=0.025){tasas.push(fmt(t*100,1)+'%');vans.push(Math.round(calcVAN(P.flows,t)));}
+  if(chartVanC)chartVanC.destroy();
+  chartVanC=new Chart($('chart-van').getContext('2d'),{type:'line',data:{labels:tasas,datasets:[{label:'VAN (USD)',data:vans,borderColor:'#2563a8',backgroundColor:'rgba(37,99,168,0.06)',fill:true,tension:0.3,pointRadius:0,borderWidth:2},{label:'Cero',data:tasas.map(function(){return 0}),borderColor:'#c0392b',borderWidth:1,borderDash:[5,4],pointRadius:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{font:{size:10},autoSkip:true,maxTicksLimit:10}},y:{ticks:{font:{size:10},callback:function(v){return '$'+Math.round(v/1000)+'k'}}}}}});
+}
+
+function recalcEscenarios(P){
+  var le=P.litrosEfect;
+  var precios=[P.precio*0.6,P.precio*0.8,P.precio,P.precio*1.2,P.precio*1.4];
+  var vols=[Math.round(le*0.4),Math.round(le*0.6),Math.round(le*0.8),le,Math.round(P.litrosMes)];
+  var sens='<thead><tr><th>Vol \\ Precio</th>'+precios.map(function(pr){return '<th>'+fU2(pr)+'</th>';}).join('')+'</tr></thead><tbody>';
+  vols.forEach(function(vol){
+    sens+='<tr><td class="rh">'+fmt(vol)+' L</td>';
+    precios.forEach(function(pr){
+      var res=(pr*vol-P.cv*vol-P.cfTotal)*12;
+      var fls=[-P.invTotal];for(var y=1;y<=P.vida;y++)fls.push(res);
+      var van=Math.round(calcVAN(fls,P.tasa));
+      var isBase=Math.abs(pr-P.precio)<0.01&&Math.abs(vol-le)<1;
+      var cls=isBase?'sc0':van>P.invTotal*0.5?'sc5':van>0?'sc4':van>-P.invTotal*0.5?'sc3':'sc2';
+      sens+='<td class="'+cls+'">'+fU(van)+'</td>';
+    });
+    sens+='</tr>';
+  });
+  sens+='</tbody>';
+  $('tbl-sens').innerHTML=sens;
+
+  var escenarios=[
+    ['Pesimista','−20% precio, 50% vol',P.precio*0.8,le*0.5],
+    ['Conservador','−10% precio, 70% vol',P.precio*0.9,le*0.7],
+    ['Base','Configuración actual',P.precio,le],
+    ['Optimista','+10% precio, 90% vol',P.precio*1.1,le*0.9],
+    ['Muy optimista','+20% precio, cap. máx.',P.precio*1.2,P.litrosMes],
+  ];
+  var escH='<thead><tr><th>Escenario</th><th>Descripción</th><th class="r">USD/L</th><th class="r">Res./mes</th><th class="r">VAN</th></tr></thead><tbody>';
+  escenarios.forEach(function(e){
+    var vol=Math.round(e[3]);
+    var res=(e[2]*vol-P.cv*vol-P.cfTotal);
+    var fls=[-P.invTotal];for(var y=1;y<=P.vida;y++)fls.push(res*12);
+    var van=calcVAN(fls,P.tasa);
+    var isBas=e[0]==='Base';
+    escH+='<tr'+(isBas?' class="tot"':'')+'><td>'+e[0]+'</td><td style="font-size:11px;color:var(--txt2)">'+e[1]+'</td><td class="r">'+fU2(e[2])+'</td><td class="r '+(res>=0?'pos':'neg')+'">'+fU(res)+'</td><td class="r '+(van>=0?'pos':'neg')+'">'+fU(van)+'</td></tr>';
+  });
+  $('tbl-esc').innerHTML=escH+'</tbody>';
+}
+
+function updateSim(){
+  var sp=parseFloat($('sim-p').value)||1.3;
+  var sv=parseFloat($('sim-v').value)||80;
+  var scv=parseFloat($('sim-cv').value)||0.6;
+  var scf=parseFloat($('sim-cf').value)||2160;
+  $('sim-p-v').textContent=fU2(sp);
+  $('sim-v-v').textContent=sv+'%';
+  $('sim-cv-v').textContent=fU2(scv);
+  $('sim-cf-v').textContent=fU(scf);
+  var vida=gv('cfg-vida')||10,tasa=gv('cfg-tasa')/100;
+  var invT=gv('inv-equipo')+gv('inv-frio')+gv('inv-sala')+gv('inv-hab')+gv('inv-soft')+gv('inv-cw')+gv('inv-transporte')+gv('inv-otros');
+  var litDia=gv('p-litros'),diasM=gv('p-dias');
+  var litMes=Math.round(litDia*diasM*(sv/100));
+  var flujoMes=sp*litMes-scv*litMes-scf;
+  var fls=[-invT];for(var y=1;y<=vida;y++)fls.push(flujoMes*12);
+  var van=calcVAN(fls,tasa),tir=calcTIR(fls);
+  var pb=0,ac=-invT;for(var i=1;i<fls.length;i++){ac+=fls[i];if(ac>=0){pb=i*12;break;}}
+  var mg=litMes>0?sp-scv-scf/litMes:0;
+  setM('sim-van',fU(van),'',van>0?'g':'r');
+  setM('sim-tir',fmt(tir*100,1)+'%','',tir>tasa?'g':'r');
+  setM('sim-pb',pb>0?pb+' m':'> vida útil','',pb>0&&pb<=vida*6?'g':'o');
+  setM('sim-mg',fU2(mg)+'/L','',mg>0?'g':'r');
+}
+
+function addNodo(){
+  var P=state;
+  var id=Date.now();
+  nodos.push({id,name:'Nodo '+(nodos.length+1),litros:P.litrosEfect||1600,precio:P.precio||1.3,cf:P.cfTotal||2160,cv:P.cv||0.6,inv:P.invTotal||17500});
+  renderNodos();
+}
+
+function removeNodo(id){nodos=nodos.filter(function(n){return n.id!==id});renderNodos();}
+
+function renderNodos(){
+  if(!nodos.length){$('nodos-list').innerHTML='<p style="color:var(--txt3);padding:12px 0;font-size:13px">Sin nodos. Hacé clic en Agregar nodo para crear el primero.</p>';recalcRed();return;}
+  $('nodos-list').innerHTML=nodos.map(function(n){
+    var res=(n.precio*n.litros)-(n.cv*n.litros)-n.cf;
+    return '<div class="nodo-card">'+
+      '<span><input type="text" value="'+n.name+'" style="font-size:12px;width:100%" onchange="nodos.find(function(x){return x.id==='+n.id+'}).name=this.value;renderNodos()"></span>'+
+      '<span>'+fmt(n.litros)+'</span>'+
+      '<span><input type="number" value="'+n.precio.toFixed(2)+'" step="0.05" style="font-size:11px;width:70px" onchange="nodos.find(function(x){return x.id==='+n.id+'}).precio=+this.value;renderNodos()"></span>'+
+      '<span><input type="number" value="'+n.cf+'" step="100" style="font-size:11px;width:80px" onchange="nodos.find(function(x){return x.id==='+n.id+'}).cf=+this.value;renderNodos()"></span>'+
+      '<span style="font-weight:700;color:'+(res>=0?'var(--g2)':'var(--r1)')+'">'+fU(res)+'/mes</span>'+
+      '<button class="btn sm danger" onclick="removeNodo('+n.id+')">✕</button>'+
+      '</div>';
+  }).join('');
+  recalcRed();
+}
+
+function recalcRed(){
+  var P=state;
+  var tasa=P.tasa||0.06,vida=P.vida||10;
+  var totL=0,totR=0,totI=0,totV=0;
+  var rows='';
+  nodos.forEach(function(n){
+    var res=(n.precio*n.litros)-(n.cv*n.litros)-n.cf;
+    var fls=[-n.inv];for(var y=1;y<=vida;y++)fls.push(res*12);
+    var van=calcVAN(fls,tasa);
+    totL+=n.litros;totR+=res;totI+=n.inv;totV+=van;
+    rows+='<tr><td>'+n.name+'</td><td class="r">'+fmt(n.litros)+'</td><td class="r">'+fU2(n.precio)+'</td><td class="r">'+fU(n.cf)+'</td><td class="r '+(res>=0?'pos':'neg')+'">'+fU(res)+'</td><td class="r '+(van>=0?'pos':'neg')+'">'+fU(van)+'</td></tr>';
+  });
+  if(nodos.length){
+    $('red-kpis').innerHTML=metH('Nodos activos',nodos.length,'','b')+metH('Litros/mes red',fmt(totL),'L','g')+metH('Resultado red/mes',fU(totR),'USD',totR>=0?'g':'r')+metH('VAN total red',fU(totV),'USD',totV>=0?'g':'r');
+    $('red-tabla').innerHTML='<table class="tbl"><thead><tr><th>Nodo</th><th class="r">L/mes</th><th class="r">Precio/L</th><th class="r">CF/mes</th><th class="r">Resultado/mes</th><th class="r">VAN</th></tr></thead><tbody>'+rows+'<tr class="tot"><td>TOTAL</td><td class="r">'+fmt(totL)+'</td><td class="r">—</td><td class="r">—</td><td class="r '+(totR>=0?'pos':'neg')+'">'+fU(totR)+'</td><td class="r '+(totV>=0?'pos':'neg')+'">'+fU(totV)+'</td></tr></tbody></table>';
+  }else{
+    $('red-kpis').innerHTML='';$('red-tabla').innerHTML='<p style="color:var(--txt3);font-size:13px">Agregá nodos para ver el resumen de la red.</p>';
+  }
+
+  var n0=nodos.length||1,nf=gi('exp-nf')||12,modelo=gs('exp-modelo');
+  var nodosXano=[],vanAcumXano=[];
+  for(var y=0;y<=10;y++){
+    var n;
+    if(modelo==='lineal')n=Math.round(n0+(nf-n0)*(y/5));
+    else if(modelo==='exponencial')n=Math.round(n0*Math.pow(Math.max(1,nf/n0),y/5));
+    else{var k=6,t0=2.5;n=Math.round(n0+(nf-n0)/(1+Math.exp(-k*(y/5-t0/5))));}
+    nodosXano.push(Math.max(n0,Math.min(nf,n)));
+  }
+  var vanAcum=0;
+  nodosXano.forEach(function(nn,y){
+    var le=P.litrosEfect||1600;
+    var res=((P.precio||1.3)*le-(P.cv||0.6)*le-(P.cfTotal||2160))*12*nn;
+    var invY=y===0?(P.invTotal||17500)*nn:0;
+    var fl=res-invY;
+    vanAcum+=fl/Math.pow(1+(P.tasa||0.06),y);
+    vanAcumXano.push(vanAcum);
+  });
+  var labels=nodosXano.map(function(_,i){return 'Año '+i});
+  if(chartRed)chartRed.destroy();
+  chartRed=new Chart($('chart-red').getContext('2d'),{type:'bar',data:{labels,datasets:[{label:'Nodos',data:nodosXano,backgroundColor:'#1D9E75',borderRadius:3}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{font:{size:10}}},y:{ticks:{font:{size:10},stepSize:1}}}}});
+  if(chartVanRed)chartVanRed.destroy();
+  chartVanRed=new Chart($('chart-van-red').getContext('2d'),{type:'line',data:{labels,datasets:[{label:'VAN acumulado',data:vanAcumXano,borderColor:'#2563a8',backgroundColor:'rgba(37,99,168,0.06)',fill:true,tension:0.35,pointRadius:3,borderWidth:2},{label:'Cero',data:labels.map(function(){return 0}),borderColor:'#c0392b',borderWidth:1,borderDash:[5,4],pointRadius:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{font:{size:10}}},y:{ticks:{font:{size:10},callback:function(v){return '$'+Math.round(v/1000)+'k'}}}}}});
+}
+
+function recalcESG(){
+  var P=state;
+  var le=P.litrosEfect||1600;
+  var co2Cruda=gv('esg-co2-cruda'),kwh=gv('esg-kwh-litro'),co2Elec=gv('esg-co2-elec');
+  var co2Sachet=gv('esg-co2-sachet'),co2Dist=gv('esg-co2-dist'),co2Uht=gv('esg-co2-uht');
+  var co2Proceso=kwh*co2Elec;
+  var co2Total=co2Cruda+co2Proceso+co2Sachet+co2Dist;
+  var h2oCruda=gv('esg-h2o-cruda'),h2oProc=gv('esg-h2o-proc'),h2oRec=gv('esg-h2o-rec')/100;
+  var h2oTotal=h2oCruda+h2oProc*(1-h2oRec);
+  var h2oUht=gv('esg-h2o-uht');
+  var plastico=gv('esg-plastico');
+  var km=gv('esg-km'),kmInd=gv('esg-km-ind');
+  var co2Ahorro=co2Uht-co2Total;
+  var h2oAhorro=h2oUht-h2oTotal;
+  var plasticoAnual=le*12*plastico/1000;
+
+  $('esg-kpis').innerHTML=
+    metH('CO₂eq / litro',fmt(co2Total,3)+' kg','nuestro proceso',co2Total<co2Uht*0.8?'g':co2Total<co2Uht?'o':'r')+
+    metH('CO₂eq / litro UHT',fmt(co2Uht,3)+' kg','referencia industrial','b')+
+    metH('Reducción CO₂ vs. industrial',fmt(co2Ahorro,3)+' kg/L','= '+fmt(co2Ahorro/co2Uht*100,0)+'%',co2Ahorro>0?'g':'r')+
+    metH('H₂O / litro',fmt(h2oTotal,0)+' L','nuestro proceso',h2oTotal<h2oUht?'g':'o')+
+    metH('Plástico sachet / mes',fmt(plasticoAnual/12,1)+' kg','','o')+
+    metH('km locales vs. industria',km+' vs '+kmInd+' km','='+fmt((1-km/kmInd)*100,0)+'% menos logística','g');
+
+  var maxCO2=Math.max(co2Total,co2Uht)*1.1;
+  $('bars-co2').innerHTML=
+    barH('Upstream leche cruda',fmt(co2Cruda,3),maxCO2,'#1D9E75',' kg CO₂eq/L')+
+    barH('Procesamiento (elec.)',fmt(co2Proceso,4),maxCO2,'#2563a8',' kg CO₂eq/L')+
+    barH('Sachet+distribución',fmt(co2Sachet+co2Dist,4),maxCO2,'#5b3fa6',' kg CO₂eq/L')+
+    barH('TOTAL proyecto',fmt(co2Total,3),maxCO2,'#0F6E56',' kg CO₂eq/L')+
+    barH('Referencia UHT industrial',fmt(co2Uht,3),maxCO2,'#c0392b',' kg CO₂eq/L');
+
+  var maxH2O=Math.max(h2oTotal,h2oUht)*1.1;
+  $('bars-h2o').innerHTML=
+    barH('Upstream cruda',fmt(h2oCruda,0),maxH2O,'#2563a8',' L/L')+
+    barH('Procesamiento (directo)',fmt(h2oProc,2),maxH2O,'#5b9fd4',' L/L')+
+    barH('TOTAL proyecto',fmt(h2oTotal,1),maxH2O,'#0F6E56',' L/L')+
+    barH('Referencia UHT industrial',fmt(h2oUht,0),maxH2O,'#c0392b',' L/L');
+
+  var fondos=[
+    {nombre:'FEADER / LEADER (UE)',req:'Proyecto rural, impacto territorial, empleo local',cumple:co2Ahorro>0&&km<100,nota:'La reducción de km logísticos y el empleo rural son criterios clave'},
+    {nombre:'FEDER / Fondos estructurales',req:'Innovación, digitalización, sostenibilidad',cumple:true,nota:'El sistema de trazabilidad 4.0 y la transferencia tecnológica internacional son elegibles'},
+    {nombre:'Programa LIFE (UE)',req:'Proyectos demostrativos de medio ambiente y clima',cumple:co2Ahorro>0,nota:'La reducción de CO₂ vs. cadena convencional puede argumentarse si se valida con LCA formal'},
+    {nombre:'CDTI (España)',req:'I+D+i con empresa + entidad de investigación',cumple:true,nota:'La colaboración INTA-UBA con universidad española cumple el requisito de consorcio'},
+    {nombre:'Bonos verdes / inversión de impacto',req:'Métricas ESG verificables, informe de impacto',cumple:co2Ahorro>0&&h2oAhorro>0,nota:'Requiere LCA formal certificado por tercero (ej. Carbon Trust, Bureau Veritas)'},
+    {nombre:'Compras públicas sostenibles',req:'Certificación ambiental, trazabilidad, precio competitivo',cumple:le>500,nota:'Los colegios y residencias en España priorizan proveedores locales con métricas ambientales'},
+  ];
+  $('esg-elegib').innerHTML=fondos.map(function(f){
+    return '<div style="display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)">'
+      +'<span style="font-size:16px;flex-shrink:0">'+(f.cumple?'✅':'⚠️')+'</span>'
+      +'<div><div style="font-weight:600;font-size:13px">'+f.nombre+'</div>'
+      +'<div style="font-size:11px;color:var(--txt2);margin-top:2px">'+f.req+'</div>'
+      +'<div style="font-size:11px;color:var(--txt3);margin-top:2px;font-style:italic">'+f.nota+'</div></div>'
+      +'</div>';
+  }).join('');
+
+  var litrosAnio=le*12;
+  $('esg-impacto').innerHTML='<div class="g3" style="gap:10px">'
+    +metH('CO₂ evitado vs. UHT (anual)',fmt(co2Ahorro*litrosAnio,0)+' kg','='+fmt(co2Ahorro*litrosAnio/1000,2)+' t CO₂eq/año',co2Ahorro>0?'g':'r')
+    +metH('CO₂ evitado a 5 años',fmt(co2Ahorro*litrosAnio*5/1000,1)+' t CO₂eq','','g')
+    +metH('Plástico sachet / año',fmt(plasticoAnual,1)+' kg','gestión SCRAP obligatoria','o')
+    +metH('Agua ahorrada vs. UHT (anual)',fmt(h2oAhorro*litrosAnio/1000,0)+' m³','','g')
+    +metH('km logísticos evitados/año',fmt((kmInd-km)*litrosAnio/1000,0)+'k km','vs. distribución industrial','g')
+    +'</div>';
+}
+
+function recalcReporte(P){
+  $('rp-titulo').textContent=gs('cfg-nombre');
+  $('rp-subtitulo').textContent=gs('cfg-tech')+' — '+gs('cfg-region')+', '+gs('cfg-pais');
+  $('rp-fecha').textContent='Análisis generado: '+(gs('cfg-fecha')||new Date().toLocaleDateString('es'));
+
+  var scoreFin=0;
+  if(P.van>0)scoreFin+=30;
+  if(P.tir>P.tasa*1.5)scoreFin+=25;
+  if(P.resMes>0)scoreFin+=20;
+  if(P.pb>0&&P.pb<=P.vida*6)scoreFin+=15;
+  if(P.margenPct>20)scoreFin+=10;
+  scoreFin=Math.min(100,scoreFin);
+
+  var co2Total=gv('esg-co2-cruda')+gv('esg-kwh-litro')*gv('esg-co2-elec')+gv('esg-co2-sachet')+gv('esg-co2-dist');
+  var scoreESG=0;
+  if(co2Total<gv('esg-co2-uht'))scoreESG+=30;
+  if(gv('esg-km')<100)scoreESG+=20;
+  if(gv('esg-recicla')>0)scoreESG+=15;
+  if(gv('esg-h2o-rec')>0)scoreESG+=15;
+  if(gv('esg-trat')>50)scoreESG+=10;
+  scoreESG+=10;
+  scoreESG=Math.min(100,scoreESG);
+
+  var scoreTotal=Math.round(scoreFin*0.6+scoreESG*0.4);
+  $('score-fin-val').textContent=scoreFin;
+  $('score-esg-val').textContent=scoreESG;
+  $('score-tot-val').textContent=scoreTotal;
+
+  $('rp-fin').innerHTML='<thead><tr><th>Indicador</th><th class="r">Valor</th><th>Evaluación</th></tr></thead><tbody>'+[
+    ['Inversión total',fU(P.invTotal),''],
+    ['VAN ('+fmt(P.tasa*100,1)+'%)',fU(P.van),P.van>0?'✅ Positivo':'❌ Negativo'],
+    ['TIR',fmt(P.tir*100,1)+'%',P.tir>P.tasa?'✅ Mayor a tasa':'❌ Menor a tasa'],
+    ['Payback',P.pb>0?P.pb+' meses':'> horizonte',P.pb>0&&P.pb<=P.vida*6?'✅ Razonable':'⚠️ Largo'],
+    ['Resultado mensual',fU(P.resMes),P.resMes>0?'✅ Positivo':'❌ Negativo'],
+    ['Margen bruto / litro',fU2(P.margen)+' ('+fmt(P.margenPct,1)+'%)',P.margenPct>20?'✅ Sólido':P.margenPct>0?'⚠️ Ajustado':'❌ Negativo'],
+    ['Break-even volumen',P.beVol<99999?fmt(P.beVol,0)+' L/mes':'No viable',P.litrosEfect>P.beVol?'✅ Alcanzado':'❌ No alcanzado'],
+  ].map(function(r){return '<tr><td>'+r[0]+'</td><td class="r">'+r[1]+'</td><td>'+r[2]+'</td></tr>';}).join('')+'</tbody>';
+
+  var co2R=co2Total,uhtR=gv('esg-co2-uht');
+  $('rp-esg').innerHTML='<thead><tr><th>Indicador</th><th class="r">Valor</th><th>Evaluación</th></tr></thead><tbody>'+[
+    ['CO₂eq / litro (proyecto)',fmt(co2R,3)+' kg CO₂eq',''],
+    ['CO₂eq / litro (UHT ref.)',fmt(uhtR,3)+' kg CO₂eq',''],
+    ['Reducción CO₂ vs. industrial',fmt((uhtR-co2R)/uhtR*100,0)+'%',co2R<uhtR?'✅ Menor huella':'❌ Mayor huella'],
+    ['Huella hídrica total',fmt(gv('esg-h2o-cruda')+gv('esg-h2o-proc'),0)+' L/L',''],
+    ['Km logísticos vs. industrial',gv('esg-km')+' vs '+gv('esg-km-ind')+' km','✅ '+fmt((1-gv('esg-km')/gv('esg-km-ind'))*100,0)+'% menos'],
+    ['Plástico sachet / mes',fmt(P.litrosEfect*12*gv('esg-plastico')/1000/12,1)+' kg','⚠️ Evaluar recuperación'],
+  ].map(function(r){return '<tr><td>'+r[0]+'</td><td class="r">'+r[1]+'</td><td>'+r[2]+'</td></tr>';}).join('')+'</tbody>';
+
+  var conclCls,conclTxt;
+  if(scoreTotal>=70){conclCls='alert g';conclTxt='✅ PROYECTO VIABLE Y RECOMENDADO. El análisis muestra un VAN positivo, TIR superior a la tasa de descuento y métricas ambientales favorables frente a la cadena industrial convencional. El proyecto cumple los criterios básicos para postularse a financiamiento FEADER, CDTI y fondos de impacto.';}
+  else if(scoreTotal>=50){conclCls='alert o';conclTxt='⚠️ PROYECTO VIABLE CON CONDICIONES. El análisis muestra viabilidad económica pero con márgenes ajustados o debilidades en sostenibilidad. Se recomienda revisar el precio de venta, el modelo de distribución y diseñar un plan de recuperación de plástico antes de postular a fondos verdes.';}
+  else{conclCls='alert r';conclTxt='❌ PROYECTO NO RECOMENDADO EN CONDICIONES ACTUALES. Los indicadores financieros o ambientales no son suficientes para justificar la inversión o acceder a financiamiento externo. Revisar el modelo de costos, precio de venta, escala mínima y estrategia de envase.';}
+  $('rp-concl').innerHTML='<div class="'+conclCls+'" style="margin-bottom:12px">'+conclTxt+'</div><div style="font-size:12px;color:var(--txt2)"><b>Score financiero:</b> '+scoreFin+'/100 | <b>Score ESG:</b> '+scoreESG+'/100 | <b>Score total:</b> '+scoreTotal+'/100</div>';
+
+  var brechas=[];
+  if(P.van<=0)brechas.push({tipo:'r',txt:'VAN negativo: el proyecto no recupera la inversión en el período evaluado. Aumentar precio, volumen o vida útil.'});
+  if(P.tir<=P.tasa)brechas.push({tipo:'r',txt:'TIR menor a la tasa de descuento: la inversión no supera el costo de capital. Revisar estructura financiera.'});
+  if(P.resMes<=0)brechas.push({tipo:'r',txt:'Resultado mensual negativo: la operación no cubre sus costos en el volumen configurado.'});
+  if(P.litrosEfect<=P.beVol)brechas.push({tipo:'o',txt:'Volumen efectivo menor al break-even: se necesitan '+fmt(P.beVol-P.litrosEfect,0)+' L/mes más para cubrir todos los costos.'});
+  if(gv('esg-recicla')===0)brechas.push({tipo:'o',txt:'Sin sistema de recuperación de plástico sachet: el impuesto español a plásticos no reutilizables (€0.45/kg) y la normativa RD 1055/2022 requieren adhesión a SCRAP.'});
+  if(gv('cv-impuesto')===0)brechas.push({tipo:'o',txt:'Impuesto plástico (Ley 7/2022) no contemplado en el modelo de costos. Verificar impacto real.'});
+  if(P.margenPct<15)brechas.push({tipo:'o',txt:'Margen bruto por litro menor al 15%: vulnerable a variaciones de costo de energía, sachet o mano de obra.'});
+  brechas.push({tipo:'b',txt:'Marcado CE del equipo: no confirmado. Es el primer bloqueante para operar en la UE. Encargar evaluación inmediatamente.'});
+  brechas.push({tipo:'b',txt:'Evaluación del sachet bajo Reg. UE 10/2011: no confirmada. Puede impedir la comercialización aunque el proceso esté habilitado.'});
+  $('rp-brechas').innerHTML=brechas.map(function(b){return '<div class="alert '+b.tipo+'" style="margin-bottom:6px">'+b.txt+'</div>';}).join('');
+
+  var fondos2=[
+    {n:'FEADER / LEADER',c:co2R<uhtR&&gv('esg-km')<100,r:'Impacto rural territorial verificable'},
+    {n:'CDTI (innovación)',c:true,r:'Consorcio empresa + investigación'},
+    {n:'ADER PAL La Rioja',c:true,r:'Inversión productiva alimentaria en La Rioja'},
+    {n:'Programa LIFE (UE)',c:co2R<uhtR,r:'Reducción de CO₂ demostrable vs. cadena convencional'},
+    {n:'Banca ética / impacto',c:scoreESG>=50,r:'ESG score suficiente con métricas verificadas'},
+  ];
+  $('rp-fondos').innerHTML=fondos2.map(function(f){
+    return '<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)"><span>'+(f.c?'✅':'⚠️')+'</span><div><div style="font-weight:600;font-size:13px">'+f.n+'</div><div style="font-size:11px;color:var(--txt2)">'+f.r+'</div></div></div>';
+  }).join('');
+}
+
+function generarReporte(){
+  showPage('reporte',document.querySelector('.nav-tab:last-of-type'));
+  setTimeout(function(){window.scrollTo(0,0);},100);
+}
+
+document.addEventListener('DOMContentLoaded', function(){
+  // Init defaults
+  $('cfg-fecha').value=new Date().toISOString().split('T')[0];
+  $('sim-p').value=1.30;$('sim-v').value=80;$('sim-cv').value=0.60;$('sim-cf').value=2160;
+  autoLoad();
+  if(!nodos.length) addNodo();
+  recalc();
+  updateSim();
+  // Show guide if first time
+  try{
+    if(!localStorage.getItem('agrotechinvest_guide_shown') && !localStorage.getItem('agrotechinvest_v1')){
+      setTimeout(function(){ openGuide(); }, 600);
+    }
+  }catch(e){}
+  // Trigger initial sync of all range displays
+  ['cfg-tasa','cfg-vida','cfg-infl','cfg-crec'].forEach(function(id){
+    var el = document.getElementById(id);
+    if(el) el.dispatchEvent(new Event('input'));
+  });
+});
+
+// ===== PERSISTENCE & EXPORT =====
+function collectAllInputs(){
+  var data = {};
+  document.querySelectorAll('input:not([disabled]),select').forEach(function(el){
+    if(el.id) data[el.id] = el.value;
+  });
+  data._nodos = JSON.parse(JSON.stringify(nodos));
+  data._ts = new Date().toISOString();
+  return data;
+}
+function saveProject(){
+  var data = collectAllInputs();
+  var blob = new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = (document.getElementById('cfg-nombre').value||'proyecto').replace(/\s+/g,'_')+'_'+new Date().toISOString().slice(0,10)+'.json';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
+  showToast('Proyecto guardado');
+}
+function loadProject(){
+  var inp = document.createElement('input');
+  inp.type='file'; inp.accept='.json';
+  inp.onchange=function(e){
+    var file=e.target.files[0]; if(!file)return;
+    var reader=new FileReader();
+    reader.onload=function(ev){
+      try{
+        var data=JSON.parse(ev.target.result);
+        if(data._nodos){nodos=data._nodos;delete data._nodos;}
+        delete data._ts;
+        Object.keys(data).forEach(function(k){
+          var el=document.getElementById(k);
+          if(el&&!el.disabled)el.value=data[k];
+        });
+        renderNodos(); recalc(); showToast('Proyecto cargado');
+      }catch(err){showToast('Error: '+err.message,'error');}
+    };
+    reader.readAsText(file);
+  };
+  document.body.appendChild(inp); inp.click(); document.body.removeChild(inp);
+}
+function exportCSV(){
+  var P=state;
+  var rows=[['Indicador','Valor','Unidad'],
+    ['Proyecto',document.getElementById('cfg-nombre').value||'',''],
+    ['Pais',document.getElementById('cfg-pais').value||'',''],
+    ['Region',document.getElementById('cfg-region').value||'',''],
+    ['Litros efectivos mes',P.litrosEfect,'L/mes'],
+    ['Precio venta',P.precio,'USD/L'],
+    ['Costo variable',P.cv,'USD/L'],
+    ['Costo fijo total',P.cfTotal,'USD/mes'],
+    ['Costo total litro',P.costoLitro,'USD/L'],
+    ['Margen litro',P.margen,'USD/L'],
+    ['Margen pct',P.margenPct.toFixed(1),'%'],
+    ['Resultado mensual',P.resMes,'USD/mes'],
+    ['Inversion total',P.invTotal,'USD'],
+    ['VAN',P.van.toFixed(0),'USD'],
+    ['TIR',(P.tir*100).toFixed(1),'%'],
+    ['Payback',P.pb,'meses'],
+    ['Break-even vol',P.beVol<99999?P.beVol.toFixed(0):'No viable','L/mes'],
+  ];
+  var csv=rows.map(function(r){return r.map(function(c){return '"'+String(c).replace(/"/g,'""')+'"';}).join(',');}).join('\n');
+  var blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8;'});
+  var url=URL.createObjectURL(blob);
+  var a=document.createElement('a');
+  a.href=url; a.download='resultados.csv';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
+}
+function showToast(msg,type){
+  var t=document.getElementById('toast-msg');
+  if(!t){t=document.createElement('div');t.id='toast-msg';t.style.cssText='position:fixed;bottom:24px;right:24px;padding:11px 20px;border-radius:8px;font-size:13px;font-weight:600;z-index:9999;color:#fff;box-shadow:0 4px 12px rgba(0,0,0,.3);transition:opacity 0.4s';document.body.appendChild(t);}
+  t.style.background=type==='error'?'#c0392b':'#1a5c38';
+  t.textContent=msg; t.style.opacity='1';
+  clearTimeout(t._to); t._to=setTimeout(function(){t.style.opacity='0';},3500);
+}
+function autoSave(){
+  try{localStorage.setItem('agrotechinvest_v1',JSON.stringify(collectAllInputs()));}catch(e){}
+}
+function autoLoad(){
+  try{
+    var s=localStorage.getItem('agrotechinvest_v1');
+    if(!s)return;
+    var data=JSON.parse(s);
+    if(data._nodos){nodos=data._nodos;delete data._nodos;}
+    delete data._ts;
+    Object.keys(data).forEach(function(k){var el=document.getElementById(k);if(el&&!el.disabled)el.value=data[k];});
+    renderNodos();
+    showToast('Sesión anterior restaurada');
+  }catch(e){}
+}
+function openGuide(){document.getElementById('guide-modal').style.display='flex';}
+function closeGuide(){
+  document.getElementById('guide-modal').style.display='none';
+  try{if(document.getElementById('guide-no-show').checked)localStorage.setItem('agrotechinvest_guide_shown','1');}catch(e){}
+}
+setInterval(autoSave,20000);
+</script>
+
+</html>
