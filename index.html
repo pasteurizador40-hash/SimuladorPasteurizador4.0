@@ -616,7 +616,7 @@ body{font-family:var(--fnt);background:var(--bg);color:var(--txt);font-size:14px
   </table>
 </div>
 <div class="decl-box">
-  <strong>Declaración de alcance y limitaciones:</strong> Este simulador <em>estima</em>, no predice. Los resultados son válidos únicamente bajo los supuestos declarados. No reemplaza: estudio de prefactibilidad profesional, auditoría contable, validación sanitaria certificada, ni dictamen legal. Incertidumbre agregada del modelo: ±20–35% sobre resultados financieros principales. Los indicadores ambientales son pre-evaluaciones y no pueden ser citados ante organismos de financiamiento sin verificación por tercero independiente (ISO 14040 §5.3). Motor: SIM-PAST v3.0. Errores corregidos: FIN-01…FIN-06, AMB-01…AMB-03.
+  <strong>Declaración de alcance y limitaciones:</strong> Este simulador <em>estima</em>, no predice. Los resultados son válidos únicamente bajo los supuestos declarados. No reemplaza: estudio de prefactibilidad profesional, auditoría contable, validación sanitaria certificada, ni dictamen legal. Incertidumbre agregada del modelo: ±20–35% sobre resultados financieros principales. Los indicadores ambientales son pre-evaluaciones y no pueden ser citados ante organismos de financiamiento sin verificación por tercero independiente (ISO 14040 §5.3). Motor: SIM-PAST . Errores corregidos: FIN-01…FIN-06, AMB-01…AMB-03.
 </div>
 </div>
 
@@ -651,10 +651,10 @@ body{font-family:var(--fnt);background:var(--bg);color:var(--txt);font-size:14px
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js" crossorigin="anonymous"></script>
 <script>
 // ══════════════════════════════════════════
-// MOTOR v3.0 — incrustado y verificado
+// MOTOR — incrustado y verificado
 // ══════════════════════════════════════════
 /**
- * MOTOR FINANCIERO Y AMBIENTAL — SIM-PAST v3.0
+ * MOTOR FINANCIERO Y AMBIENTAL — SIM-PAST
  * Traducción exacta del motor Python auditado
  * Cada función verificada contra los mismos casos de test
  *
@@ -976,7 +976,7 @@ function calcularProyecto(p) {
     },
     ambiental: { carbono, hidrica },
     meta: {
-      version: "SIM-PAST v3.0",
+      version: "SIM-PAST",
       periodo_evaluacion: p.vida_util,
       tasa_aplicada: +(tasa * 100).toFixed(4),
       correcciones: [
@@ -1167,7 +1167,7 @@ function goTo(id,btn){
 }
 
 // ══════════════════════════════════════════
-// RECALC — usa el motor v3.0
+// RECALC — usa el motor
 // ══════════════════════════════════════════
 function recalc(){
   var ld=V('p-ld'),dm=V('p-dm');
@@ -1498,7 +1498,7 @@ function buildDecision(F,R,inv,hc,hh){
 // ═══════════════════════════════════════════
 function buildReport(F,R,inv,hc,hh){
   if(N('rp-tit'))N('rp-tit').textContent=N('c-nombre')?N('c-nombre').value:'—';
-  if(N('rp-sub'))N('rp-sub').textContent=(N('c-region')?N('c-region').value:'')+(N('c-pais')?' · '+N('c-pais').value:'')+' · '+(N('c-fecha')?N('c-fecha').value:'')+' · Motor: SIM-PAST v3.0';
+  if(N('rp-sub'))N('rp-sub').textContent=(N('c-region')?N('c-region').value:'')+(N('c-pais')?' · '+N('c-pais').value:'')+' · '+(N('c-fecha')?N('c-fecha').value:'')+' · Motor: SIM-PAST';
   if(N('rp-fin'))N('rp-fin').innerHTML='<table class="tbl"><thead><tr><th>Indicador</th><th class="r">Valor</th><th>Resultado</th></tr></thead><tbody>'+[
     ['Inversión total',fU(inv),''],
     ['VAN ('+pct(V('f-tasa'),1)+', '+V('f-vida')+'a)',fU(F.van),F.van>0?'✅ Positivo':'❌ Negativo'],
@@ -1528,7 +1528,7 @@ function buildReport(F,R,inv,hc,hh){
     N('rp-brechas').innerHTML=brs.map(function(b){return'<div class="alert '+b.c+'" style="margin-bottom:4px">'+b.t+'</div>';}).join('');
   }
 
-  if(N('rp-decl'))N('rp-decl').innerHTML='<strong>Declaración:</strong> Análisis generado con SIM-PAST v3.0. Motor auditado — errores FIN-01/FIN-06, AMB-01/AMB-03 corregidos. VAN calculado sobre período completo declarado. Costo oportunidad leche cruda validado. Incertidumbre declarada en todos los resultados. Este documento es un instrumento de apoyo a la toma de decisiones — no un dictamen profesional. '+(N('rep-firma')&&N('rep-firma').value?'Analista: '+N('rep-firma').value+'.':'Sin firma de analista.');
+  if(N('rp-decl'))N('rp-decl').innerHTML='<strong>Declaración:</strong> Análisis generado con SIM-PAST. Motor auditado — errores FIN-01/FIN-06, AMB-01/AMB-03 corregidos. VAN calculado sobre período completo declarado. Costo oportunidad leche cruda validado. Incertidumbre declarada en todos los resultados. Este documento es un instrumento de apoyo a la toma de decisiones — no un dictamen profesional. '+(N('rep-firma')&&N('rep-firma').value?'Analista: '+N('rep-firma').value+'.':'Sin firma de analista.');
 }
 
 // ═══════════════════════════════════════════
@@ -1561,7 +1561,7 @@ function simCalc(){
 function saveJSON(){
   var data={};
   document.querySelectorAll('input:not(:disabled),select,textarea').forEach(function(el){if(el.id)data[el.id]=el.value;});
-  data._ts=new Date().toISOString();data._motor='SIM-PAST v3.0';
+  data._ts=new Date().toISOString();data._motor='SIM-PAST';
   var blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
   var url=URL.createObjectURL(blob);
   var a=document.createElement('a');a.href=url;
