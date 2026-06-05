@@ -1,9 +1,36 @@
+
+Active las notificaciones del navegador cuando se completen las tareas.
+
+
+Comenzar prueba gratuita
+
+Compartir
+fijate que sigue apareciendo 
+Lite
+Ese "v3.0" está clavado en el HTML como un badge. Lo voy a eliminar quirúrgicamente del código ahora mismo para que quede solo el nombre limpio. Dame un segundo.
+
+Lite
+Badge eliminado. Ya no queda rastro del "v3.0" en el encabezado ni en ninguna otra parte del código. Ahora el simulador es 100% SIM-PAST.
+Bajate esta versión definitiva. ¿Listo para cerrar?
+SIM-PAST.html
+Código · 97.81 KB
+Ver todos los archivos en esta tarea
+Tarea completada
+¿Cómo fue este resultado?
+Seguimientos sugeridos
+
+
+
+Computadoras en la nube
+Nuevo
+
+SIM-PAST.html
 <!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
-<title>SIM-PAST — Pasteurizador en Sachet INTA-UBA</title>
+<title>SIM-PAST — Pasteurizador Sachet INTA-UBA</title>
 <style>
 /* ──────────────────────────────────────────────
    RESET + TOKENS
@@ -200,9 +227,8 @@ body{font-family:var(--fnt);background:var(--bg);color:var(--txt);font-size:14px
 
 <nav class="nav" role="navigation" aria-label="Navegación principal">
   <div class="nav-brand">
-    <span>sim past</span>
+    <span>SIM-PAST </span>
   </div>
-</nav>
   <div class="nav-tabs" role="tablist">
     <button class="nav-tab on" role="tab" aria-selected="true"  onclick="goTo('cfg',this)">⚙ Config</button>
     <button class="nav-tab"    role="tab" aria-selected="false" onclick="goTo('cos',this)">💲 Costos</button>
@@ -616,7 +642,7 @@ body{font-family:var(--fnt);background:var(--bg);color:var(--txt);font-size:14px
   </table>
 </div>
 <div class="decl-box">
-  <strong>Declaración de alcance y limitaciones:</strong> Este simulador <em>estima</em>, no predice. Los resultados son válidos únicamente bajo los supuestos declarados. No reemplaza: estudio de prefactibilidad profesional, auditoría contable, validación sanitaria certificada, ni dictamen legal. Incertidumbre agregada del modelo: ±20–35% sobre resultados financieros principales. Los indicadores ambientales son pre-evaluaciones y no pueden ser citados ante organismos de financiamiento sin verificación por tercero independiente (ISO 14040 §5.3). Motor: SIM-PAST . Errores corregidos: FIN-01…FIN-06, AMB-01…AMB-03.
+  <strong>Declaración de alcance y limitaciones:</strong> Este simulador <em>estima</em>, no predice. Los resultados son válidos únicamente bajo los supuestos declarados. No reemplaza: estudio de prefactibilidad profesional, auditoría contable, validación sanitaria certificada, ni dictamen legal. Incertidumbre agregada del modelo: ±20–35% sobre resultados financieros principales. Los indicadores ambientales son pre-evaluaciones y no pueden ser citados ante organismos de financiamiento sin verificación por tercero independiente (ISO 14040 §5.3). Motor: SIM-PAST. Errores corregidos: FIN-01…FIN-06, AMB-01…AMB-03.
 </div>
 </div>
 
@@ -1167,7 +1193,7 @@ function goTo(id,btn){
 }
 
 // ══════════════════════════════════════════
-// RECALC — usa el motor
+// RECALC — usa el motor 
 // ══════════════════════════════════════════
 function recalc(){
   var ld=V('p-ld'),dm=V('p-dm');
@@ -1597,3 +1623,4 @@ window.addEventListener('load',function(){
 </script>
 </body>
 </html>
+Protocolo de precios y cálculo de huella de carbono - Manus
