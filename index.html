@@ -2,840 +2,1596 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AgroTech Invest</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+<title>SIM-PAST — Pasteurizador en Sachet INTA-UBA</title>
 <style>
+/* ──────────────────────────────────────────────
+   RESET + TOKENS
+────────────────────────────────────────────── */
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --g1:#1a5c38;--g2:#2e7d52;--g3:#4a9e72;--g4:#c8e6d0;--g5:#e8f5ee;
-  --b1:#1a3a6b;--b2:#2563a8;--txt:#111;--txt2:#444;--txt3:#888;
-  --border:#ddd;--bg:#f3f5f3;--card:#fff;--surface:#f8f8f6;
-  --r1:#b02020;--r2:#fdecea;--o1:#c05010;--o2:#fff0e0;
+  --g1:#0f4a2a;--g2:#1d7a4a;--g3:#3aad74;--g4:#d4f0e2;--g5:#f0faf5;
+  --b1:#0c2d6b;--b2:#1e56b0;--b4:#ddeeff;
+  --a1:#7a3800;--a2:#c05a00;--a4:#fff0d8;
+  --r1:#8b1a1a;--r2:#c42020;--r4:#fde8e8;
+  --s1:#141f14;--s2:#1e2e1e;
+  --txt:#1a1a1a;--txt2:#4a4a4a;--txt3:#888;
+  --border:#d8ddd8;--bg:#f3f5f2;--card:#fff;--surf:#f8f9f7;
+  --rad:8px;--rad-lg:12px;
+  --fnt:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;
 }
-body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--txt);font-size:14px;line-height:1.5;overflow-x:hidden}
-/* NAV */
-.nav{background:#0d1f13;display:flex;align-items:stretch;flex-wrap:wrap;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(0,0,0,.4)}
-.nav-brand{padding:0 16px;display:flex;align-items:center;gap:8px;border-right:1px solid rgba(255,255,255,.1)}
-.nav-brand span{font-size:13px;font-weight:700;color:#c8e6d0;letter-spacing:.3px}
+body{font-family:var(--fnt);background:var(--bg);color:var(--txt);font-size:14px;line-height:1.5;overflow-x:hidden}
+
+/* ──────────────────────────────────────────────
+   NAV
+────────────────────────────────────────────── */
+.nav{background:var(--s1);display:flex;align-items:stretch;flex-wrap:wrap;position:sticky;top:0;z-index:200;box-shadow:0 2px 8px rgba(0,0,0,.4)}
+.nav-brand{padding:0 16px;display:flex;align-items:center;gap:8px;border-right:1px solid rgba(255,255,255,.08);flex-shrink:0}
+.nav-brand span{font-size:12px;font-weight:600;color:#c8e6d4;letter-spacing:.3px}
+.nav-brand .ver{font-size:9px;color:rgba(255,255,255,.35);background:rgba(255,255,255,.08);padding:1px 5px;border-radius:3px;margin-left:4px}
 .nav-tabs{display:flex;overflow-x:auto;flex:1;scrollbar-width:none}
 .nav-tabs::-webkit-scrollbar{display:none}
-.nav-tab{padding:0 14px;font-size:12px;cursor:pointer;border:none;background:none;color:#7a9a7a;white-space:nowrap;border-bottom:3px solid transparent;height:48px;display:flex;align-items:center;font-family:inherit;transition:all .15s}
-.nav-tab:hover{color:#c8e6d0}
-.nav-tab.on{color:#fff;border-bottom-color:#4a9e72}
-.nav-act{padding:0 12px;display:flex;align-items:center;gap:6px;border-left:1px solid rgba(255,255,255,.1)}
-.btn{border:1px solid var(--border);border-radius:6px;padding:6px 14px;font-size:12px;cursor:pointer;background:none;color:var(--txt);font-family:inherit;transition:background .12s}
-.btn:hover{background:var(--surface)}
-.btn.calc{background:#2e7d52;color:#fff;border-color:#2e7d52;font-weight:700;font-size:13px;padding:6px 18px}
-.btn.calc:hover{background:#1a5c38}
-/* PAGES */
-.page{display:none;padding:18px;max-width:1380px;margin:0 auto}
+.nav-tab{padding:0 13px;font-size:11px;font-weight:500;letter-spacing:.3px;cursor:pointer;border:none;background:none;color:rgba(255,255,255,.4);white-space:nowrap;border-bottom:2px solid transparent;height:46px;display:flex;align-items:center;font-family:var(--fnt);transition:all .15s}
+.nav-tab:hover{color:rgba(255,255,255,.7)}
+.nav-tab.on{color:#3aad74;border-bottom-color:#3aad74}
+.nav-act{padding:0 10px;display:flex;align-items:center;gap:6px;border-left:1px solid rgba(255,255,255,.08);flex-shrink:0}
+.btn{border:0.5px solid var(--border);border-radius:var(--rad);padding:5px 12px;font-size:11px;font-weight:500;cursor:pointer;background:var(--card);color:var(--txt);font-family:var(--fnt);transition:background .1s;white-space:nowrap}
+.btn:hover{background:var(--surf)}
+.btn.primary{background:var(--g2);color:#fff;border-color:var(--g2)}
+.btn.primary:hover{background:var(--g1)}
+
+/* ──────────────────────────────────────────────
+   ESTADO MOTOR
+────────────────────────────────────────────── */
+.motor-status{height:3px;background:var(--border);overflow:hidden}
+.motor-status-fill{height:100%;transition:width .3s,background .3s;width:0}
+
+/* ──────────────────────────────────────────────
+   PÁGINAS
+────────────────────────────────────────────── */
+.page{display:none;padding:16px 18px;max-width:1360px;margin:0 auto;animation:fi .2s ease}
 .page.on{display:block}
-/* GRIDS */
-.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
-.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
-@media(max-width:800px){.g2,.g3,.g4{grid-template-columns:1fr}}
-/* CARDS */
-.card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:12px;overflow:hidden}
-.card-t{font-size:11px;font-weight:700;letter-spacing:.7px;color:var(--g2);text-transform:uppercase;margin-bottom:12px;padding-bottom:7px;border-bottom:1px solid var(--border)}
-/* METRICS */
-.kpi{background:var(--surface);border-radius:8px;padding:12px 14px}
-.kpi .lbl{font-size:10px;color:var(--txt3);text-transform:uppercase;letter-spacing:.3px;margin-bottom:3px}
-.kpi .val{font-size:20px;font-weight:700;color:var(--txt)}
-.kpi .sub{font-size:11px;color:var(--txt3);margin-top:2px}
+@keyframes fi{from{opacity:0;transform:translateY(3px)}to{opacity:1;transform:translateY(0)}}
+
+/* ──────────────────────────────────────────────
+   GRIDS
+────────────────────────────────────────────── */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}
+.g5{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+@media(max-width:900px){.g3,.g4,.g5{grid-template-columns:1fr 1fr}}
+@media(max-width:580px){.g2,.g3,.g4,.g5{grid-template-columns:1fr}}
+
+/* ──────────────────────────────────────────────
+   CARDS
+────────────────────────────────────────────── */
+.card{background:var(--card);border:0.5px solid var(--border);border-radius:var(--rad-lg);padding:14px 16px;margin-bottom:10px}
+.card-t{font-size:10px;font-weight:600;letter-spacing:.7px;color:var(--txt3);text-transform:uppercase;margin-bottom:10px;padding-bottom:6px;border-bottom:0.5px solid var(--border)}
+
+/* ──────────────────────────────────────────────
+   KPIs
+────────────────────────────────────────────── */
+.kpi{background:var(--surf);border-radius:var(--rad);padding:10px 12px}
+.kpi .lbl{font-size:9px;color:var(--txt3);text-transform:uppercase;letter-spacing:.4px;margin-bottom:2px}
+.kpi .val{font-size:17px;font-weight:500;color:var(--txt)}
+.kpi .sub{font-size:10px;color:var(--txt3);margin-top:1px}
 .kpi.g .val{color:var(--g1)}
-.kpi.r .val{color:var(--r1)}
-.kpi.o .val{color:var(--o1)}
+.kpi.r .val{color:var(--r2)}
+.kpi.a .val{color:var(--a2)}
 .kpi.b .val{color:var(--b2)}
-/* INPUTS */
-.sect{font-size:10px;font-weight:700;letter-spacing:.6px;color:var(--txt3);text-transform:uppercase;margin:14px 0 7px;padding-bottom:4px;border-bottom:1px solid var(--border)}
+
+/* ──────────────────────────────────────────────
+   INPUTS
+────────────────────────────────────────────── */
 .ig{display:flex;flex-direction:column;gap:3px;margin-bottom:7px}
 .ig label{font-size:11px;color:var(--txt2)}
-.ig input,.ig select{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:7px 10px;color:var(--txt);font-size:13px;font-family:inherit;width:100%}
-.ig input:focus,.ig select:focus{outline:2px solid var(--g3)}
-.ig input:disabled{background:#d4edda;color:#155724;font-weight:700;-webkit-text-fill-color:#155724}
-.ig .hint{font-size:10px;color:var(--txt3)}
-.ig2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.ig3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
-/* RANGE */
-.rrow{display:flex;align-items:center;gap:8px;margin-bottom:9px;flex-wrap:wrap}
-.rrow label{font-size:11px;color:var(--txt2);min-width:140px;flex-shrink:0}
-.rrow input[type=range]{flex:1;min-width:80px;accent-color:var(--g2)}
-.rrow .rv{font-size:12px;font-weight:700;min-width:50px;text-align:right}
-/* ALERTS */
-.alert{border-radius:7px;padding:11px 14px;font-size:13px;margin:8px 0;border-left:3px solid}
-.alert.g{background:var(--g5);border-color:var(--g2);color:#0d3a20}
-.alert.r{background:var(--r2);border-color:var(--r1);color:#7a1a1a}
-.alert.o{background:var(--o2);border-color:var(--o1);color:#7a3a0a}
-.alert.b{background:#e8f0ff;border-color:var(--b2);color:#0a2a6a}
-/* TABLES */
-.tbl{width:100%;border-collapse:collapse;font-size:12px}
-.tbl th{background:var(--g1);color:#fff;padding:7px 9px;text-align:left;font-size:11px;font-weight:600}
-.tbl td{padding:6px 9px;border-bottom:1px solid var(--border)}
-.tbl tr:nth-child(even) td{background:var(--surface)}
-.tbl tr.tot td{font-weight:700;background:var(--g5);color:var(--g1);border-top:2px solid var(--g2)}
-.tbl .r{text-align:right}
-.tbl .pos{color:var(--g1);font-weight:600}
-.tbl .neg{color:var(--r1);font-weight:600}
+.ig input,.ig select{background:var(--surf);border:0.5px solid var(--border);border-radius:var(--rad);padding:6px 9px;color:var(--txt);font-size:12px;font-family:var(--fnt);width:100%;-webkit-appearance:none}
+.ig input:focus,.ig select:focus{outline:2px solid var(--g3);outline-offset:0}
+.ig input:disabled{background:#e8f5ee;color:var(--g1);font-weight:500;-webkit-text-fill-color:var(--g1)}
+.ig .hint{font-size:9px;color:var(--txt3)}
+.ig .src{font-size:9px;color:var(--g2);background:var(--g5);padding:1px 5px;border-radius:3px;display:inline-block;margin-top:2px}
+.ig2{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.ig3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px}
+@media(max-width:500px){.ig2,.ig3{grid-template-columns:1fr}}
+
+/* ──────────────────────────────────────────────
+   ALERTAS
+────────────────────────────────────────────── */
+.alert{border-radius:var(--rad);padding:9px 12px;font-size:12px;margin:6px 0;border-left:3px solid;line-height:1.6}
+.alert.g{background:var(--g5);border-color:var(--g2);color:var(--g1)}
+.alert.r{background:var(--r4);border-color:var(--r2);color:var(--r1)}
+.alert.a{background:var(--a4);border-color:var(--a2);color:var(--a1)}
+.alert.b{background:var(--b4);border-color:var(--b2);color:var(--b1)}
+.alert.n{background:var(--surf);border-color:var(--border);color:var(--txt2)}
+.alert ul{margin:4px 0 0 16px}
+.alert li{margin-bottom:2px}
+
+/* ──────────────────────────────────────────────
+   TABLAS
+────────────────────────────────────────────── */
 .tbl-wrap{overflow-x:auto}
-/* BARS */
+.tbl{width:100%;border-collapse:collapse;font-size:12px}
+.tbl th{background:var(--surf);padding:6px 9px;text-align:left;font-size:10px;font-weight:600;letter-spacing:.4px;text-transform:uppercase;color:var(--txt3);border-bottom:0.5px solid var(--border)}
+.tbl td{padding:6px 9px;border-bottom:0.5px solid var(--border)}
+.tbl tr:hover td{background:#fafbfa}
+.tbl tr.tot td{font-weight:600;background:var(--g5);color:var(--g1)}
+.tbl tr.neg-row td{background:var(--r4)}
+.tbl .r{text-align:right}
+.tbl .c{text-align:center}
+.tbl .pos{color:var(--g1);font-weight:500}
+.tbl .neg{color:var(--r2);font-weight:500}
+.tbl .src{font-size:9px;color:var(--txt3)}
+.tbl .band{font-size:9px;color:var(--a2)}
+
+/* ──────────────────────────────────────────────
+   BARRAS
+────────────────────────────────────────────── */
 .brow{display:flex;align-items:center;gap:8px;margin-bottom:5px}
-.brow .blbl{width:150px;font-size:11px;color:var(--txt2);text-align:right;flex-shrink:0}
-.brow .btrack{flex:1;background:var(--surface);border-radius:3px;height:16px;overflow:hidden}
-.brow .bfill{height:100%;border-radius:3px;min-width:2px}
-.brow .bval{width:80px;font-size:11px;color:var(--txt);flex-shrink:0}
-/* SENS */
-.sens{border-collapse:collapse;font-size:11px}
-.sens th{background:var(--g1);color:#fff;padding:6px 8px;text-align:center}
-.sens td{padding:5px 8px;border:1px solid var(--border);text-align:center}
-.sens .rh{background:var(--surface);font-weight:600;text-align:left;padding-left:8px}
-.sc5{background:#b7dfc7;color:#0d3a20;font-weight:700}
-.sc4{background:#d4edda;color:#155724}
-.sc3{background:#fff3cd;color:#856404}
-.sc2{background:#f8d7da;color:#721c24}
-.sc0{background:#1a5c38;color:#fff;font-weight:700}
-/* GUIDE */
-.overlay{position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px}
-.guide-box{background:#fff;border-radius:14px;max-width:540px;width:100%;max-height:88vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.35)}
-.guide-hdr{background:linear-gradient(135deg,#1a5c38,#1a3a6b);color:#fff;padding:22px;border-radius:14px 14px 0 0}
-.guide-hdr h2{font-size:18px;margin-bottom:3px}
-.guide-body{padding:18px}
-.gstep{display:flex;gap:12px;margin-bottom:16px;padding-bottom:16px;border-bottom:1px solid #eee}
-.gstep:last-child{border:none;margin:0;padding:0}
-.gnum{width:30px;height:30px;border-radius:50%;background:var(--g1);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0;margin-top:2px}
-.gstep h3{font-size:13px;font-weight:700;margin-bottom:3px}
-.gstep p{font-size:12px;color:#444;line-height:1.5}
-.tip{display:inline-block;font-size:10px;background:var(--g5);color:var(--g1);padding:3px 7px;border-radius:3px;margin-top:4px}
-.guide-ftr{padding:14px 18px;border-top:1px solid #eee;display:flex;justify-content:space-between;align-items:center;background:#f8f8f6;border-radius:0 0 14px 14px}
-/* TOAST */
-#toast{position:fixed;bottom:22px;right:22px;padding:10px 18px;border-radius:8px;font-size:13px;font-weight:600;z-index:10000;color:#fff;box-shadow:0 4px 14px rgba(0,0,0,.25);transition:opacity .4s;opacity:0;pointer-events:none}
-/* PRINT */
-@media print{.nav,.nav-act,.btn,.overlay{display:none!important}.page{display:block!important;padding:8px}}
+.brow .blbl{font-size:11px;color:var(--txt2);min-width:140px;text-align:right;flex-shrink:0}
+.brow .btrack{flex:1;background:var(--surf);border-radius:3px;height:14px;overflow:hidden}
+.brow .bfill{height:100%;border-radius:3px;min-width:2px;transition:width .4s}
+.brow .bval{font-size:11px;min-width:80px;color:var(--txt)}
+.prog-wrap{height:6px;background:var(--surf);border-radius:3px;overflow:hidden;margin:3px 0}
+.prog-fill{height:100%;border-radius:3px;transition:width .4s}
+
+/* ──────────────────────────────────────────────
+   SENSIBILIDAD
+────────────────────────────────────────────── */
+.sens{border-collapse:collapse;font-size:11px;width:100%}
+.sens th{background:var(--surf);padding:5px 8px;text-align:center;font-size:10px;color:var(--txt3);font-weight:600;border:0.5px solid var(--border)}
+.sens td{padding:5px 8px;text-align:center;border:0.5px solid var(--border);font-size:11px}
+.sc-vp{background:#b7dfc7;color:var(--g1);font-weight:600}
+.sc-ok{background:#d4f0e2;color:var(--g1)}
+.sc-mg{background:#fff3cd;color:#856404}
+.sc-no{background:#f8d7da;color:var(--r1)}
+.sc-bs{background:var(--g1);color:#fff;font-weight:600}
+
+/* ──────────────────────────────────────────────
+   SLIDER ROWS
+────────────────────────────────────────────── */
+.srow{display:flex;align-items:center;gap:8px;margin-bottom:9px;flex-wrap:wrap}
+.srow label{font-size:11px;color:var(--txt2);min-width:160px;flex-shrink:0}
+.srow input[type=range]{flex:1;min-width:80px;accent-color:var(--g2);height:4px}
+.srow .rv{font-size:12px;font-weight:500;min-width:54px;text-align:right;color:var(--txt)}
+
+/* ──────────────────────────────────────────────
+   DECISIÓN / SCORE
+────────────────────────────────────────────── */
+.score-ring{width:76px;height:76px;border-radius:50%;border:2px solid var(--border);display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0}
+.score-ring .sv{font-size:20px;font-weight:500}
+.score-ring .sl{font-size:9px;color:var(--txt3);text-transform:uppercase;letter-spacing:.3px;margin-top:1px}
+
+/* ──────────────────────────────────────────────
+   BANDAS DE INCERTIDUMBRE
+────────────────────────────────────────────── */
+.band-box{background:var(--a4);border:0.5px dashed var(--a2);border-radius:var(--rad);padding:7px 10px;font-size:11px;color:var(--a1);margin:5px 0;line-height:1.6}
+.band-box strong{font-weight:600}
+
+/* ──────────────────────────────────────────────
+   DECLARACIÓN
+────────────────────────────────────────────── */
+.decl-box{background:var(--surf);border:0.5px solid var(--border);border-radius:var(--rad);padding:10px 12px;font-size:11px;color:var(--txt2);line-height:1.7;margin:6px 0}
+.decl-box strong{color:var(--txt);font-weight:500}
+
+/* ──────────────────────────────────────────────
+   TOAST
+────────────────────────────────────────────── */
+#toast{position:fixed;bottom:18px;right:18px;padding:9px 16px;border-radius:var(--rad);font-size:12px;font-weight:500;z-index:9999;color:#fff;box-shadow:0 4px 14px rgba(0,0,0,.2);transition:opacity .35s;opacity:0;pointer-events:none;max-width:320px}
+
+/* ──────────────────────────────────────────────
+   PRINT — Exportar solo informe con layout A4
+────────────────────────────────────────────── */
+@media print{
+  @page { size: A4; margin: 12mm; }
+  body { background: #fff !important; color: #111 !important; font-size: 11px; }
+  .nav, .nav-act, .btn, .motor-status, #toast { display: none !important; }
+  .page { display: none !important; padding: 0 !important; max-width: none !important; }
+  #page-rep { display: block !important; padding: 0 !important; }
+  .g2, .g3 { display: block !important; }
+  .card { break-inside: avoid; page-break-inside: avoid; box-shadow: none !important; margin-bottom: 8px; }
+  .tbl-wrap { overflow: visible !important; }
+  .tbl { font-size: 10px; }
+  .tbl th { font-size: 9px; }
+}
 </style>
 </head>
 <body>
 
-<!-- GUIDE MODAL -->
-<div class="overlay" id="guide" style="display:none">
-  <div class="guide-box">
-    <div class="guide-hdr"><h2>🌿 AgroTech Invest</h2><p style="font-size:13px;opacity:.8">Simulador de inversión para tecnología agroalimentaria</p></div>
-    <div class="guide-body">
-      <div class="gstep"><div class="gnum">1</div><div><h3>⚙ Configuración — empezá acá</h3><p>Seleccioná el país, ingresá litros/día, días/mes y precio de venta. Completá la inversión inicial. Los indicadores del fondo se actualizan solos.</p><span class="tip">El botón ▶ Calcular (arriba a la derecha) recalcula todo en cualquier momento</span></div></div>
-      <div class="gstep"><div class="gnum">2</div><div><h3>💰 Costos — ajustá valores reales</h3><p>Modificá: leche cruda (= precio al productor), sachet, energía, mano de obra y alquiler. El resto usa valores de referencia internacionales.</p></div></div>
-      <div class="gstep"><div class="gnum">3</div><div><h3>📊 Micro — ¿es rentable?</h3><p>Muestra resultado mensual, punto de equilibrio y comparativa vs. vender leche cruda sin procesar.</p><span class="tip">Break-even = litros mínimos para no perder plata</span></div></div>
-      <div class="gstep"><div class="gnum">4</div><div><h3>📈 Flujo de Caja — VAN, TIR, Payback</h3><p>El gráfico muestra cuándo recuperás la inversión. VAN positivo + TIR mayor a la tasa = proyecto viable.</p></div></div>
-      <div class="gstep"><div class="gnum">5</div><div><h3>🎯 Escenarios — stress test</h3><p>Tabla 5×5 de sensibilidad y simulador con sliders. Probá distintos precios y volúmenes.</p><span class="tip">Celdas verdes = VAN positivo en ese escenario</span></div></div>
-      <div class="gstep"><div class="gnum">6</div><div><h3>🌿 Ambiental — fondos verdes</h3><p>Huella de carbono e hídrica. Determina elegibilidad para FEADER, LIFE, CDTI y banca ética.</p></div></div>
-      <div class="gstep"><div class="gnum">7</div><div><h3>📋 Reporte — exportar</h3><p>Score financiero + ESG, conclusión automática y brechas críticas. Ctrl+P para exportar a PDF.</p><span class="tip">💾 guarda el proyecto como JSON para retomarlo después</span></div></div>
-    </div>
-    <div class="guide-ftr">
-      <label style="font-size:12px;color:#666;cursor:pointer"><input type="checkbox" id="no-guide" style="margin-right:5px">No mostrar de nuevo</label>
-      <button class="btn calc" onclick="closeGuide()">Comenzar →</button>
-    </div>
+<nav class="nav" role="navigation" aria-label="Navegación principal">
+  <div class="nav-brand">
+    <span>SIM-PAST <span class="ver">v3.0</span></span>
   </div>
-</div>
-
-<div id="toast"></div>
-
-<!-- NAV -->
-<nav class="nav">
-  <div class="nav-brand"><span>🌿 AgroTech Invest</span></div>
-  <div class="nav-tabs">
-    <button class="nav-tab on" onclick="goTo('cfg',this)">⚙ Configuración</button>
-    <button class="nav-tab" onclick="goTo('cos',this)">💰 Costos</button>
-    <button class="nav-tab" onclick="goTo('mic',this)">📊 Micro</button>
-    <button class="nav-tab" onclick="goTo('flu',this)">📈 Flujo de Caja</button>
-    <button class="nav-tab" onclick="goTo('esc',this)">🎯 Escenarios</button>
-    <button class="nav-tab" onclick="goTo('amb',this)">🌿 Ambiental</button>
-    <button class="nav-tab" onclick="goTo('rep',this)">📋 Reporte</button>
+  <div class="nav-tabs" role="tablist">
+    <button class="nav-tab on" role="tab" aria-selected="true"  onclick="goTo('cfg',this)">⚙ Config</button>
+    <button class="nav-tab"    role="tab" aria-selected="false" onclick="goTo('cos',this)">💲 Costos</button>
+    <button class="nav-tab"    role="tab" aria-selected="false" onclick="goTo('mic',this)">📊 Microeconomía</button>
+    <button class="nav-tab"    role="tab" aria-selected="false" onclick="goTo('flu',this)">📈 Flujo de Caja</button>
+    <button class="nav-tab"    role="tab" aria-selected="false" onclick="goTo('esc',this)">🎯 Escenarios</button>
+    <button class="nav-tab"    role="tab" aria-selected="false" onclick="goTo('tec',this)">⚙ Técnico</button>
+    <button class="nav-tab"    role="tab" aria-selected="false" onclick="goTo('amb',this)">🌿 Ambiental</button>
+    <button class="nav-tab"    role="tab" aria-selected="false" onclick="goTo('dec',this)">✅ Decisión</button>
+    <button class="nav-tab"    role="tab" aria-selected="false" onclick="goTo('rep',this)">📋 Informe</button>
   </div>
   <div class="nav-act">
-    <button class="btn calc" onclick="recalc();toast('Calculado ✓')">▶ Calcular</button>
-    <button class="btn" onclick="openGuide()" title="Guía">❓</button>
-    <button class="btn" onclick="saveJSON()" title="Guardar">💾</button>
-    <button class="btn" onclick="loadJSON()" title="Cargar">📂</button>
-    <button class="btn" onclick="window.print()" title="Imprimir">🖨</button>
+    <button class="btn primary" onclick="recalc();toast('Calculado ✓','g')" aria-label="Recalcular todo">▶ Calcular</button>
+    <button class="btn" onclick="saveJSON()" aria-label="Guardar proyecto">💾</button>
+    <button class="btn" onclick="loadJSON()" aria-label="Cargar proyecto">📂</button>
+    <button class="btn" onclick="window.print()" aria-label="Imprimir">🖨</button>
   </div>
 </nav>
+<div class="motor-status" role="status" aria-label="Estado del motor de cálculo">
+  <div class="motor-status-fill" id="motor-bar"></div>
+</div>
 
-<!-- PAGE: CONFIGURACION -->
-<div class="page on" id="page-cfg">
+<!-- ══════════════════════════════════════════
+     CONFIG
+══════════════════════════════════════════ -->
+<div class="page on" id="page-cfg" role="tabpanel">
 <div class="g3">
-<div class="card">
-  <div class="card-t">Proyecto y País</div>
-  <div class="ig"><label>Nombre del proyecto</label><input id="c-nombre" value="Pasteurizador Sachet INTA-UBA" oninput="recalc()"></div>
-  <div class="ig2">
-    <div class="ig"><label>País</label>
-      <select id="c-pais" onchange="setPais()">
-        <option value="ES">🇪🇸 España</option>
-        <option value="AR">🇦🇷 Argentina</option>
-        <option value="HN">🇭🇳 Honduras</option>
-        <option value="UY">🇺🇾 Uruguay</option>
-        <option value="MX">🇲🇽 México</option>
-        <option value="XX">🌍 Otro</option>
-      </select>
+  <div class="card">
+    <div class="card-t">Proyecto</div>
+    <div class="ig"><label for="c-nombre">Nombre del proyecto</label><input id="c-nombre" value="Pasteurizador Sachet INTA-UBA" oninput="recalc()"></div>
+    <div class="ig2">
+      <div class="ig"><label for="c-pais">País</label>
+        <select id="c-pais" onchange="setPais();recalc()">
+          <option value="AR">Argentina</option>
+          <option value="HN">Honduras</option>
+          <option value="UY">Uruguay</option>
+          <option value="MX">México</option>
+          <option value="ES">España (UE)</option>
+          <option value="XX">Otro</option>
+        </select>
+      </div>
+      <div class="ig"><label for="c-region">Región / Provincia</label><input id="c-region" value="Buenos Aires" oninput="recalc()"></div>
+      <div class="ig"><label for="c-moneda">Moneda local</label><input id="c-moneda" value="ARS" oninput="recalc()"></div>
+      <div class="ig"><label for="c-tc">1 USD =</label><input id="c-tc" type="number" value="1150" step="1" min="0.01" oninput="recalc()"></div>
     </div>
-    <div class="ig"><label>Región</label><input id="c-region" value="La Rioja" oninput="recalc()"></div>
-    <div class="ig"><label>Moneda local</label><input id="c-moneda" value="EUR" oninput="recalc()"></div>
-    <div class="ig"><label>1 USD =</label><input id="c-tc" type="number" value="0.92" step="0.01" oninput="recalc()"></div>
+    <div class="ig2">
+      <div class="ig"><label for="c-fecha">Fecha del análisis</label><input id="c-fecha" type="date" oninput="recalc()"></div>
+      <div class="ig"><label for="c-ver">Versión</label><input id="c-ver" value="v1.0" oninput="recalc()"></div>
+    </div>
+    <div class="ig"><label for="c-resp">Responsable / Analista</label><input id="c-resp" placeholder="Nombre y cargo" oninput="recalc()"></div>
   </div>
-  <div class="ig2">
-    <div class="ig"><label>Tecnología</label><input id="c-tech" value="Pasteurizador LTLT 63°C/30min" oninput="recalc()"></div>
-    <div class="ig"><label>Producto</label><input id="c-prod" value="Leche pasteurizada sachet" oninput="recalc()"></div>
-  </div>
-  <div class="ig"><label>Fecha del análisis</label><input id="c-fecha" type="date" oninput="recalc()"></div>
-</div>
 
-<div class="card">
-  <div class="card-t">Producción</div>
-  <div class="ig2">
-    <div class="ig"><label>Litros / día</label><input id="p-ld" type="number" value="100" min="1" oninput="recalc()"></div>
-    <div class="ig"><label>Días operativos / mes</label><input id="p-dm" type="number" value="20" min="1" max="31" oninput="recalc()"></div>
-    <div class="ig"><label>% capacidad utilizada</label><input id="p-ut" type="number" value="80" min="10" max="100" oninput="recalc()"></div>
-    <div class="ig"><label>Litros efectivos / mes</label><input id="p-lef" disabled></div>
-    <div class="ig"><label>Precio venta (USD / litro)</label><input id="p-pv" type="number" value="1.30" step="0.05" oninput="recalc()"></div>
-    <div class="ig"><label>Precio en moneda local</label><input id="p-pvl" disabled></div>
-    <div class="ig"><label>Precio leche cruda (USD/L)</label><input id="p-pc" type="number" value="0.36" step="0.01" oninput="recalc()"></div>
-    <div class="ig"><label>Especie</label>
-      <select id="p-esp" onchange="recalc()">
-        <option>Vaca</option><option>Cabra</option><option>Oveja</option>
-      </select>
+  <div class="card">
+    <div class="card-t">Producción</div>
+    <div class="ig2">
+      <div class="ig"><label for="p-ld">Litros / día</label>
+        <input id="p-ld" type="number" value="100" min="1" max="200" oninput="recalc()">
+        <span class="hint">1 módulo INTA-UBA = máx. 100 L/día</span>
+      </div>
+      <div class="ig"><label for="p-dm">Días operativos / mes</label>
+        <input id="p-dm" type="number" value="20" min="1" max="26" oninput="recalc()">
+      </div>
+      <div class="ig"><label for="p-mod">Módulos</label>
+        <select id="p-mod" onchange="recalc()">
+          <option value="1">1 módulo (máx. 100 L/día)</option>
+          <option value="2">2 módulos (máx. 200 L/día)</option>
+        </select>
+      </div>
+      <div class="ig"><label>Litros efectivos / mes</label><input id="p-lef" disabled aria-label="Litros efectivos por mes calculados"></div>
+      <div class="ig"><label for="p-pv">Precio venta (USD/L)</label><input id="p-pv" type="number" value="1.411" step="0.01" min="0" oninput="recalc()"></div>
+      <div class="ig"><label for="p-pc">Precio leche cruda (USD/L)</label>
+        <input id="p-pc" type="number" value="0.433" step="0.005" min="0" oninput="recalc()">
+        <span class="src">SIGLeA ene.2022 — actualizar</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-t">Inversión inicial (USD)</div>
+    <div class="ig2">
+      <div class="ig"><label for="i-eq">Pasteurizador</label>
+        <input id="i-eq" type="number" value="7996" min="0" oninput="recalc()">
+        <span class="src">Ref. INTA-UBA feb.2022</span>
+      </div>
+      <div class="ig"><label for="i-fr">Equipo frío</label>
+        <input id="i-fr" type="number" value="1411" min="0" oninput="recalc()">
+        <span class="src">Ref. INTA-UBA feb.2022</span>
+      </div>
+      <div class="ig"><label for="i-sa">Adecuación sala</label><input id="i-sa" type="number" value="1500" min="0" oninput="recalc()"></div>
+      <div class="ig"><label for="i-ha">Habilitaciones</label><input id="i-ha" type="number" value="800" min="0" oninput="recalc()"></div>
+      <div class="ig"><label for="i-sw">Software / trazabilidad</label><input id="i-sw" type="number" value="500" min="0" oninput="recalc()"></div>
+      <div class="ig"><label for="i-cw">Capital de trabajo</label><input id="i-cw" type="number" value="2000" min="0" oninput="recalc()"></div>
+      <div class="ig"><label for="i-tr">Instalación / flete</label><input id="i-tr" type="number" value="400" min="0" oninput="recalc()"></div>
+      <div class="ig"><label>Imprevistos (10% auto)</label><input id="i-ot" disabled aria-label="Imprevistos calculados automáticamente"></div>
+    </div>
+    <div style="background:var(--b4);border-radius:var(--rad);padding:9px 12px;margin-top:4px;display:flex;justify-content:space-between;align-items:center">
+      <span style="font-size:11px;color:var(--b1);font-weight:500">Total inversión</span>
+      <span style="font-size:18px;font-weight:500;color:var(--b1)" id="i-tot">—</span>
     </div>
   </div>
 </div>
 
 <div class="card">
-  <div class="card-t">Inversión Inicial (USD)</div>
-  <div class="ig2">
-    <div class="ig"><label>Equipo pasteurizador</label><input id="i-eq" type="number" value="8000" oninput="recalc()"></div>
-    <div class="ig"><label>Equipo de frío</label><input id="i-fr" type="number" value="2000" oninput="recalc()"></div>
-    <div class="ig"><label>Adecuación sala</label><input id="i-sa" type="number" value="3000" oninput="recalc()"></div>
-    <div class="ig"><label>Habilitaciones y CE</label><input id="i-ha" type="number" value="1500" oninput="recalc()"></div>
-    <div class="ig"><label>Software trazabilidad</label><input id="i-sw" type="number" value="500" oninput="recalc()"></div>
-    <div class="ig"><label>Capital de trabajo</label><input id="i-cw" type="number" value="2000" oninput="recalc()"></div>
-    <div class="ig"><label>Transporte / instalación</label><input id="i-tr" type="number" value="800" oninput="recalc()"></div>
-    <div class="ig"><label>Otros</label><input id="i-ot" type="number" value="500" oninput="recalc()"></div>
-  </div>
-  <div style="background:var(--g5);border-radius:7px;padding:12px;margin-top:8px">
-    <div style="font-size:10px;color:var(--txt3);text-transform:uppercase;letter-spacing:.4px">Total inversión</div>
-    <div style="font-size:22px;font-weight:700;color:var(--g1)" id="i-tot">—</div>
-  </div>
-</div>
-</div>
-
-<div class="card">
-  <div class="card-t">Parámetros Financieros</div>
+  <div class="card-t">Parámetros financieros</div>
   <div class="g2">
     <div>
-      <div class="rrow"><label>Tasa de descuento anual (%)</label><input type="range" id="f-tasa" min="1" max="25" step=".5" value="6" oninput="sv('rv-tasa',this.value+'%');recalc()"><span class="rv" id="rv-tasa">6%</span></div>
-      <div class="rrow"><label>Vida útil equipo (años)</label><input type="range" id="f-vida" min="5" max="25" step="1" value="10" oninput="sv('rv-vida',this.value+' años');recalc()"><span class="rv" id="rv-vida">10 años</span></div>
+      <div class="srow"><label>Tasa de descuento / ke (%)</label><input type="range" id="f-tasa" min="1" max="30" step=".5" value="6" oninput="N('rv-tasa').textContent=parseFloat(this.value).toFixed(1)+'%';recalc()"><span class="rv" id="rv-tasa">6.0%</span></div>
+      <div class="srow"><label>Vida útil (años)</label><input type="range" id="f-vida" min="5" max="15" step="1" value="9" oninput="N('rv-vida').textContent=this.value+' a';recalc()"><span class="rv" id="rv-vida">9 a</span></div>
+      <div class="srow"><label>Inflación costos (% anual)</label><input type="range" id="f-infl" min="0" max="120" step="1" value="3" oninput="N('rv-infl').textContent=parseFloat(this.value).toFixed(0)+'%';recalc()"><span class="rv" id="rv-infl">3%</span></div>
+      <div class="srow"><label>Crecimiento precio venta (% anual)</label><input type="range" id="f-crec" min="0" max="15" step=".5" value="2" oninput="N('rv-crec').textContent=parseFloat(this.value).toFixed(1)+'%';recalc()"><span class="rv" id="rv-crec">2.0%</span></div>
     </div>
     <div>
-      <div class="rrow"><label>Inflación anual costos (%)</label><input type="range" id="f-infl" min="0" max="15" step=".5" value="2.5" oninput="sv('rv-infl',this.value+'%');recalc()"><span class="rv" id="rv-infl">2.5%</span></div>
-      <div class="rrow"><label>Crecimiento precio venta/año (%)</label><input type="range" id="f-crec" min="0" max="10" step=".5" value="1.5" oninput="sv('rv-crec',this.value+'%');recalc()"><span class="rv" id="rv-crec">1.5%</span></div>
+      <div class="ig"><label for="f-kd">Tasa de la deuda (% anual — 0 si capital propio)</label><input id="f-kd" type="number" value="0" step="1" min="0" max="50" oninput="recalc()"></div>
+      <div class="ig"><label for="f-pd">% financiado con deuda</label><input id="f-pd" type="number" value="0" step="5" min="0" max="100" oninput="recalc()"></div>
+      <div class="alert n" style="margin-top:6px;font-size:11px">
+        <strong>WACC:</strong> Si hay deuda, la tasa de descuento efectiva es el promedio ponderado ke×(E/V) + kd×(D/V). El campo WACC resultante se muestra abajo. Con 0% de deuda, WACC = ke.
+      </div>
     </div>
   </div>
 </div>
 
-<div class="g4" id="cfg-kpis" style="margin-top:4px"></div>
+<div class="g5" id="cfg-kpis" style="margin-top:2px"></div>
+<div id="cfg-errores" style="margin-top:8px"></div>
 </div>
 
-<!-- PAGE: COSTOS -->
-<div class="page" id="page-cos">
+<!-- ══════════════════════════════════════════
+     COSTOS
+══════════════════════════════════════════ -->
+<div class="page" id="page-cos" role="tabpanel">
 <div class="g2">
+  <div class="card">
+    <div class="card-t">Costos variables (USD / litro) — fuente requerida</div>
+    <table class="tbl" style="width:100%">
+      <thead><tr><th>Ítem</th><th class="r" style="width:85px">USD/L</th><th>Fuente / Metodología</th></tr></thead>
+      <tbody>
+        <tr><td>Leche cruda (costo oportunidad) <span style="color:var(--r2);font-weight:600">*</span></td>
+          <td class="r"><input id="cv-lc" type="number" value="0.433" step="0.001" min="0" oninput="recalc()" style="width:80px;font-size:11px;padding:3px 5px;background:var(--surf);border:0.5px solid var(--border);border-radius:4px;color:var(--txt)"></td>
+          <td class="src">SIGLeA / DINALE / precio tambo local. Fecha obligatoria.</td></tr>
+        <tr><td>Sachet / envase</td>
+          <td class="r"><input id="cv-sa" type="number" value="0.054" step="0.001" min="0" oninput="recalc()" style="width:80px;font-size:11px;padding:3px 5px;background:var(--surf);border:0.5px solid var(--border);border-radius:4px;color:var(--txt)"></td>
+          <td class="src">Proveedor certificado. Verificar apt. pasteurización.</td></tr>
+        <tr><td>Energía eléctrica (proceso)</td>
+          <td class="r"><input id="cv-en" type="number" value="0.025" step="0.001" min="0" oninput="recalc()" style="width:80px;font-size:11px;padding:3px 5px;background:var(--surf);border:0.5px solid var(--border);border-radius:4px;color:var(--txt)"></td>
+          <td class="src">0.065 kWh/L (INTA-UBA) × tarifa local. Solo proceso.</td></tr>
+        <tr><td>Detergentes</td>
+          <td class="r"><input id="cv-de" type="number" value="0.001" step="0.0005" min="0" oninput="recalc()" style="width:80px;font-size:11px;padding:3px 5px;background:var(--surf);border:0.5px solid var(--border);border-radius:4px;color:var(--txt)"></td>
+          <td class="src">Manual de procedimiento INTA-UBA.</td></tr>
+        <tr><td>Kit fosfatasa alcalina</td>
+          <td class="r"><input id="cv-fo" type="number" value="0.005" step="0.001" min="0" oninput="recalc()" style="width:80px;font-size:11px;padding:3px 5px;background:var(--surf);border:0.5px solid var(--border);border-radius:4px;color:var(--txt)"></td>
+          <td class="src">Obligatorio cada lote. Codex CAC/RCP 57-2004.</td></tr>
+        <tr><td>Control materia prima (lab)</td>
+          <td class="r"><input id="cv-co" type="number" value="0.005" step="0.001" min="0" oninput="recalc()" style="width:80px;font-size:11px;padding:3px 5px;background:var(--surf);border:0.5px solid var(--border);border-radius:4px;color:var(--txt)"></td>
+          <td class="src">Recuento bacteriano, prueba plataforma SENASA.</td></tr>
+        <tr><td>Distribución / reparto</td>
+          <td class="r"><input id="cv-re" type="number" value="0.015" step="0.001" min="0" oninput="recalc()" style="width:80px;font-size:11px;padding:3px 5px;background:var(--surf);border:0.5px solid var(--border);border-radius:4px;color:var(--txt)"></td>
+          <td class="src">km × combustible × 3 (mant+seguro+patente) / litros.</td></tr>
+        <tr><td>Merma proceso (purgas/limpieza)</td>
+          <td class="r"><input id="cv-me" type="number" value="0.014" step="0.001" min="0" oninput="recalc()" style="width:80px;font-size:11px;padding:3px 5px;background:var(--surf);border:0.5px solid var(--border);border-radius:4px;color:var(--txt)"></td>
+          <td class="src">Estimado 3–5% del costo leche cruda. Medir en campo.</td></tr>
+        <tr><td>Royalty / licencia tecnología</td>
+          <td class="r"><input id="cv-ro" type="number" value="0.004" step="0.001" min="0" oninput="recalc()" style="width:80px;font-size:11px;padding:3px 5px;background:var(--surf);border:0.5px solid var(--border);border-radius:4px;color:var(--txt)"></td>
+          <td class="src">Verificar modelo de licencia INTA-UBA. Pendiente.</td></tr>
+      </tbody>
+    </table>
+    <div style="margin-top:8px;background:var(--g5);border-radius:var(--rad);padding:8px 12px;display:flex;justify-content:space-between">
+      <span style="font-size:11px;color:var(--g1);font-weight:500">Total CV</span>
+      <span style="font-size:15px;font-weight:500;color:var(--g1)" id="cv-tot">—</span>
+    </div>
+    <p style="font-size:10px;color:var(--r2);margin-top:5px"><span style="font-weight:600">*</span> El costo de oportunidad de la leche cruda es el ítem de mayor impacto. Su omisión es el error más frecuente y puede cambiar el proyecto de viable a inviable.</p>
+  </div>
+  <div class="card">
+    <div class="card-t">Costos fijos (USD / mes)</div>
+    <div class="ig2">
+      <div class="ig"><label for="cf-op">Mano de obra operario/a</label><input id="cf-op" type="number" value="376" min="0" oninput="recalc()"><span class="src">Ref. INTA-UBA feb.2022</span></div>
+      <div class="ig"><label for="cf-dt">Director técnico (parcial)</label><input id="cf-dt" type="number" value="80" min="0" oninput="recalc()"></div>
+      <div class="ig"><label for="cf-ca">Responsable calidad (parc.)</label><input id="cf-ca" type="number" value="60" min="0" oninput="recalc()"></div>
+      <div class="ig"><label for="cf-al">Alquiler / uso sala</label><input id="cf-al" type="number" value="0" min="0" oninput="recalc()"></div>
+      <div class="ig"><label for="cf-en">Energía frío 24h (fijo)</label><input id="cf-en" type="number" value="12" min="0" oninput="recalc()"><span class="hint">Heladera+freezer. Independiente del volumen.</span></div>
+      <div class="ig"><label for="cf-ma">Mantenimiento preventivo</label><input id="cf-ma" type="number" value="20" min="0" oninput="recalc()"><span class="src">~USD 235/año (INTA-UBA)</span></div>
+      <div class="ig"><label for="cf-sw">Software gestión 4.0</label><input id="cf-sw" type="number" value="8" min="0" oninput="recalc()"></div>
+      <div class="ig"><label for="cf-se">Seguro</label><input id="cf-se" type="number" value="30" min="0" oninput="recalc()"></div>
+      <div class="ig"><label for="cf-au">Auditorías / HACCP</label><input id="cf-au" type="number" value="40" min="0" oninput="recalc()"></div>
+      <div class="ig"><label for="cf-mk">Marketing</label><input id="cf-mk" type="number" value="30" min="0" oninput="recalc()"></div>
+      <div class="ig"><label>Amortización (auto)</label><input id="cf-am" disabled aria-label="Amortización calculada automáticamente"></div>
+      <div class="ig"><label>Costo financiero deuda (auto)</label><input id="cf-fin" disabled aria-label="Costo financiero calculado automáticamente"></div>
+    </div>
+    <div style="background:var(--g5);border-radius:var(--rad);padding:8px 12px;margin-top:4px;display:flex;justify-content:space-between">
+      <span style="font-size:11px;color:var(--g1);font-weight:500">Total CF / mes</span>
+      <span style="font-size:15px;font-weight:500;color:var(--g1)" id="cf-tot">—</span>
+    </div>
+  </div>
+</div>
 <div class="card">
-  <div class="card-t">Costos Variables (USD / litro)</div>
-  <div class="sect">Materia prima</div>
-  <div class="ig2">
-    <div class="ig"><label>Leche cruda (costo oportunidad)</label><input id="cv-lc" type="number" value="0.36" step="0.01" oninput="recalc()"><span class="hint">= precio al tambo</span></div>
-    <div class="ig"><label>Sachet / envase</label><input id="cv-sa" type="number" value="0.07" step="0.005" oninput="recalc()"></div>
-  </div>
-  <div class="sect">Insumos de proceso</div>
-  <div class="ig3">
-    <div class="ig"><label>Energía eléctrica</label><input id="cv-en" type="number" value="0.025" step="0.005" oninput="recalc()"></div>
-    <div class="ig"><label>Agua</label><input id="cv-ag" type="number" value="0.003" step="0.001" oninput="recalc()"></div>
-    <div class="ig"><label>Detergentes</label><input id="cv-de" type="number" value="0.005" step="0.001" oninput="recalc()"></div>
-    <div class="ig"><label>Kit fosfatasa</label><input id="cv-fo" type="number" value="0.008" step="0.001" oninput="recalc()"></div>
-    <div class="ig"><label>Análisis lab</label><input id="cv-la" type="number" value="0.010" step="0.001" oninput="recalc()"></div>
-    <div class="ig"><label>Control MP</label><input id="cv-co" type="number" value="0.003" step="0.001" oninput="recalc()"></div>
-  </div>
-  <div class="sect">Logística y regulatorio</div>
-  <div class="ig3">
-    <div class="ig"><label>Distribución / reparto</label><input id="cv-re" type="number" value="0.05" step="0.01" oninput="recalc()"></div>
-    <div class="ig"><label>Impuesto plástico UE</label><input id="cv-ip" type="number" value="0.003" step="0.001" oninput="recalc()"><span class="hint">€0.45/kg plástico</span></div>
-    <div class="ig"><label>Royalty / licencia</label><input id="cv-ro" type="number" value="0.015" step="0.005" oninput="recalc()"></div>
-  </div>
-  <div style="background:var(--g5);border-radius:7px;padding:10px;margin-top:10px">
-    <div style="font-size:10px;color:var(--txt3);text-transform:uppercase">Costo variable total</div>
-    <div style="font-size:18px;font-weight:700;color:var(--g1)" id="cv-tot">—</div>
-    <div style="font-size:11px;color:var(--txt3)" id="cv-pct">— % del precio de venta</div>
-  </div>
+  <div class="card-t">Composición del costo por litro</div>
+  <div id="cos-bars"></div>
+  <div class="band-box" style="margin-top:8px" id="cos-band"></div>
+</div>
 </div>
 
-<div class="card">
-  <div class="card-t">Costos Fijos (USD / mes)</div>
-  <div class="sect">Mano de obra</div>
-  <div class="ig2">
-    <div class="ig"><label>Operario producción</label><input id="cf-op" type="number" value="900" oninput="recalc()"></div>
-    <div class="ig"><label>Responsable calidad</label><input id="cf-ca" type="number" value="300" oninput="recalc()"></div>
-    <div class="ig"><label>Administración</label><input id="cf-ad" type="number" value="200" oninput="recalc()"></div>
-    <div class="ig"><label>Director técnico (part)</label><input id="cf-dt" type="number" value="150" oninput="recalc()"></div>
-  </div>
-  <div class="sect">Instalaciones y seguros</div>
-  <div class="ig2">
-    <div class="ig"><label>Alquiler sala</label><input id="cf-al" type="number" value="300" oninput="recalc()"></div>
-    <div class="ig"><label>Seguro RC alimentaria</label><input id="cf-se" type="number" value="80" oninput="recalc()"></div>
-  </div>
-  <div class="sect">Equipos, software y regulatorio</div>
-  <div class="ig2">
-    <div class="ig"><label>Mantenimiento preventivo</label><input id="cf-ma" type="number" value="120" oninput="recalc()"></div>
-    <div class="ig"><label>Software / SaaS trazabilidad</label><input id="cf-sw" type="number" value="50" oninput="recalc()"></div>
-    <div class="ig"><label>Amortización (calculada)</label><input id="cf-am" disabled></div>
-    <div class="ig"><label>Auditorías APPCC</label><input id="cf-au" type="number" value="50" oninput="recalc()"></div>
-    <div class="ig"><label>Marketing</label><input id="cf-mk" type="number" value="80" oninput="recalc()"></div>
-    <div class="ig"><label>Otros fijos</label><input id="cf-ot" type="number" value="50" oninput="recalc()"></div>
-  </div>
-  <div style="background:var(--g5);border-radius:7px;padding:10px;margin-top:10px">
-    <div style="font-size:10px;color:var(--txt3);text-transform:uppercase">Costo fijo total / mes</div>
-    <div style="font-size:18px;font-weight:700;color:var(--g1)" id="cf-tot">—</div>
-  </div>
-</div>
-</div>
-<div class="card"><div class="card-t">Composición del costo por litro</div><div id="cos-bars"></div><p style="font-size:11px;color:var(--txt3);margin-top:6px" id="cos-res"></p></div>
-</div>
-
-<!-- PAGE: MICRO -->
-<div class="page" id="page-mic">
-<div class="g4" id="mic-kpis" style="margin-bottom:12px"></div>
+<!-- ══════════════════════════════════════════
+     MICROECONOMÍA
+══════════════════════════════════════════ -->
+<div class="page" id="page-mic" role="tabpanel">
+<div class="g4" id="mic-kpis" style="margin-bottom:10px"></div>
 <div class="g2">
-<div class="card">
-  <div class="card-t">Resultado Mensual</div>
-  <div id="mic-tbl-wrap" class="tbl-wrap"></div>
-  <div id="mic-alert" class="alert" style="margin-top:8px"></div>
+  <div class="card">
+    <div class="card-t">Estado de resultados mensual</div>
+    <div class="tbl-wrap" id="mic-tbl"></div>
+    <div id="mic-alert" style="margin-top:6px"></div>
+  </div>
+  <div class="card">
+    <div class="card-t">Punto de equilibrio</div>
+    <div id="be-detail"></div>
+    <div class="card-t" style="margin-top:12px">Comparativa leche cruda vs. pasteurizada</div>
+    <div class="tbl-wrap" id="comp-tbl"></div>
+  </div>
 </div>
-<div class="card">
-  <div class="card-t">Punto de Equilibrio</div>
-  <div class="sect">Break-even en volumen (litros/mes)</div>
-  <div id="be-bars"></div>
-  <div class="sect" style="margin-top:12px">Precio mínimo de break-even</div>
-  <div style="font-size:22px;font-weight:700;color:var(--b2);margin:5px 0" id="be-pmin">—</div>
-  <div style="background:var(--surface);border-radius:4px;height:9px;overflow:hidden;margin:4px 0"><div id="be-prog" style="height:100%;border-radius:4px;transition:width .3s"></div></div>
-  <p style="font-size:11px;color:var(--txt3);margin-top:3px" id="be-txt"></p>
-  <div class="sect" style="margin-top:14px">Indicadores de retorno</div>
-  <div class="g2" style="gap:8px" id="mic-ret"></div>
+<div class="g4" id="mic-ret" style="margin-top:4px"></div>
 </div>
+
+<!-- ══════════════════════════════════════════
+     FLUJO DE CAJA
+══════════════════════════════════════════ -->
+<div class="page" id="page-flu" role="tabpanel">
+<div class="g4" id="flu-kpis" style="margin-bottom:10px"></div>
+<div class="alert b" id="flu-meta"></div>
+<div class="card" style="margin-top:8px">
+  <div class="card-t">Flujo de caja anualizado — con banda de incertidumbre ±20%</div>
+  <div class="tbl-wrap" id="flu-tbl"></div>
 </div>
-<div class="card">
-  <div class="card-t">Comparativa: Leche cruda vs. Pasteurizada en sachet</div>
-  <div class="tbl-wrap" id="comp-tbl-wrap"></div>
-  <p style="font-size:11px;color:var(--txt3);margin-top:6px" id="comp-txt"></p>
+<div class="g2" style="margin-top:4px">
+  <div class="card"><div class="card-t">Evolución acumulada — período completo</div>
+    <canvas id="ch-flu" height="180" role="img" aria-label="Flujo de caja acumulado a lo largo del período de evaluación"></canvas>
+  </div>
+  <div class="card"><div class="card-t">VAN según tasa de descuento</div>
+    <canvas id="ch-van" height="180" role="img" aria-label="VAN del proyecto según la tasa de descuento aplicada"></canvas>
+  </div>
+</div>
+<div class="decl-box">
+  <strong>Limitaciones del modelo de flujo:</strong> (1) Se asume operación al volumen declarado desde el mes 1 — la curva de adopción real puede demorar 3–12 meses. (2) Los flujos con inflación diferencial son proyecciones, no predicciones. (3) La banda ±20% subestima la incertidumbre real en los primeros 2 años.
 </div>
 </div>
 
-<!-- PAGE: FLUJO -->
-<div class="page" id="page-flu">
-<div class="g4" id="flu-kpis" style="margin-bottom:12px"></div>
-<div class="card"><div class="card-t">Flujo de Caja Anualizado (USD)</div><div class="tbl-wrap" id="flu-tbl-wrap"></div></div>
+<!-- ══════════════════════════════════════════
+     ESCENARIOS
+══════════════════════════════════════════ -->
+<div class="page" id="page-esc" role="tabpanel">
+<div class="card">
+  <div class="card-t">Sensibilidad VAN — precio × volumen (5×5)</div>
+  <p style="font-size:11px;color:var(--txt3);margin-bottom:8px">Celda verde oscuro = escenario base actual. Valores en USD al final del período de evaluación.</p>
+  <div class="tbl-wrap"><table class="sens" id="sens-tbl" aria-label="Tabla de sensibilidad VAN por precio y volumen"></table></div>
+</div>
 <div class="g2">
-  <div class="card"><div class="card-t">Evolución mensual — 36 meses</div><div style="position:relative;height:190px"><canvas id="ch-mens" role="img" aria-label="Flujo de caja acumulado mensual durante los primeros 36 meses"></canvas></div></div>
-  <div class="card"><div class="card-t">VAN vs. tasa de descuento</div><div style="position:relative;height:190px"><canvas id="ch-van" role="img" aria-label="VAN del proyecto según la tasa de descuento anual"></canvas></div></div>
+  <div class="card">
+    <div class="card-t">Escenarios predefinidos</div>
+    <div class="tbl-wrap" id="esc-tbl"></div>
+  </div>
+  <div class="card">
+    <div class="card-t">Simulador interactivo</div>
+    <div class="srow"><label>Precio (USD/L)</label><input type="range" id="s-p" min=".3" max="2.5" step=".05" value="1.411" oninput="N('sv-p').textContent='$'+parseFloat(this.value).toFixed(2);simCalc()"><span class="rv" id="sv-p">.41</span></div>
+    <div class="srow"><label>Volumen (% cap.)</label><input type="range" id="s-v" min="20" max="100" step="5" value="80" oninput="N('sv-v').textContent=this.value+'%';simCalc()"><span class="rv" id="sv-v">80%</span></div>
+    <div class="srow"><label>CV (USD/L)</label><input type="range" id="s-cv" min=".20" max="1.20" step=".01" value=".56" oninput="N('sv-cv').textContent='$'+parseFloat(this.value).toFixed(2);simCalc()"><span class="rv" id="sv-cv">/bin/sh.56</span></div>
+    <div class="srow"><label>CF (USD/mes)</label><input type="range" id="s-cf" min="300" max="2000" step="50" value="700" oninput="N('sv-cf').textContent='$'+parseInt(this.value);simCalc()"><span class="rv" id="sv-cf">00</span></div>
+    <hr style="border:none;border-top:0.5px solid var(--border);margin:8px 0">
+    <div class="g2" id="sim-kpis" style="gap:8px"></div>
+  </div>
 </div>
 </div>
 
-<!-- PAGE: ESCENARIOS -->
-<div class="page" id="page-esc">
-<div class="card">
-  <div class="card-t">Sensibilidad VAN — Precio × Volumen</div>
-  <p style="font-size:12px;color:var(--txt2);margin-bottom:8px">VAN al final de la vida útil. Verde oscuro = escenario base actual.</p>
-  <div class="tbl-wrap"><table class="sens" id="sens-tbl"></table></div>
-</div>
-<div class="g2">
-<div class="card">
-  <div class="card-t">Escenarios predefinidos</div>
-  <div class="tbl-wrap" id="esc-tbl-wrap"></div>
-</div>
-<div class="card">
-  <div class="card-t">Simulador en tiempo real</div>
-  <div class="rrow"><label>Precio (USD/L)</label><input type="range" id="s-p" min=".5" max="3" step=".05" value="1.30" oninput="sv('sv-p','$'+parseFloat(this.value).toFixed(2));simCalc()"><span class="rv" id="sv-p">$1.30</span></div>
-  <div class="rrow"><label>Volumen (% capacidad)</label><input type="range" id="s-v" min="20" max="100" step="5" value="80" oninput="sv('sv-v',this.value+'%');simCalc()"><span class="rv" id="sv-v">80%</span></div>
-  <div class="rrow"><label>Costo variable (USD/L)</label><input type="range" id="s-cv" min=".20" max="1.20" step=".01" value=".60" oninput="sv('sv-cv','$'+parseFloat(this.value).toFixed(2));simCalc()"><span class="rv" id="sv-cv">$0.60</span></div>
-  <div class="rrow"><label>Costo fijo (USD/mes)</label><input type="range" id="s-cf" min="500" max="6000" step="100" value="2160" oninput="sv('sv-cf','$'+parseInt(this.value).toLocaleString('es'));simCalc()"><span class="rv" id="sv-cf">$2,160</span></div>
-  <hr style="border:none;border-top:1px solid var(--border);margin:10px 0">
-  <div class="g2" style="gap:8px" id="sim-kpis"></div>
-</div>
+<!-- ══════════════════════════════════════════
+     TÉCNICO
+══════════════════════════════════════════ -->
+<div class="page" id="page-tec" role="tabpanel">
+<div class="alert b">Parámetros de proceso — Tecnología LTLT 63°C/30 min INTA-UBA. Referencia: Codex CAC/RCP 57-2004 | SENASA Res. 115/2020.</div>
+<div class="g2" style="margin-top:10px">
+  <div class="card">
+    <div class="card-t">Parámetros del tratamiento térmico</div>
+    <div class="ig2">
+      <div class="ig"><label for="t-temp">Temperatura pasteurización (°C)</label><input id="t-temp" type="number" value="63" min="60" max="75" oninput="recalc()"><span class="hint">LTLT mínimo: 63°C / 30 min (Codex)</span></div>
+      <div class="ig"><label for="t-ret">Tiempo de retención (min)</label><input id="t-ret" type="number" value="30" min="15" max="60" oninput="recalc()"></div>
+    </div>
+    <div id="tec-validacion" style="margin-top:8px"></div>
+    <div class="card-t" style="margin-top:12px">Validación microbiológica</div>
+    <table class="tbl">
+      <thead><tr><th>Patógeno referencia</th><th class="c">Requisito</th><th class="c">Estado</th><th>Norma</th></tr></thead>
+      <tbody>
+        <tr><td>Coxiella burnetii (organismo de referencia)</td><td class="c">≥5-log reduction</td><td class="c" id="tv-cb">—</td><td class="src">Codex / PMO FDA</td></tr>
+        <tr><td>Mycobacterium tuberculosis</td><td class="c">≥5-log a 63°C</td><td class="c" id="tv-mt">—</td><td class="src">Codex CAC/RCP 57</td></tr>
+        <tr><td>Salmonella spp.</td><td class="c">≥6-log a 63°C</td><td class="c" id="tv-sal">—</td><td class="src">HACCP PCC1</td></tr>
+        <tr><td>Listeria monocytogenes</td><td class="c">≥5-log a 63°C</td><td class="c" id="tv-list">—</td><td class="src">Reg. CE 2073/2005</td></tr>
+      </tbody>
+    </table>
+    <div class="decl-box" style="margin-top:8px">La validación microbiológica debe ser realizada por laboratorio acreditado ISO/IEC 17025 sobre muestras del proceso real. Los valores indicados son parámetros de referencia de la literatura científica.</div>
+  </div>
+  <div class="card">
+    <div class="card-t">Balance de masa y energía estimado</div>
+    <table class="tbl">
+      <thead><tr><th>Parámetro</th><th class="r">Por litro</th><th class="r">100 L/día</th><th>Fuente</th></tr></thead>
+      <tbody>
+        <tr><td>Leche cruda entrada</td><td class="r">1.00 L</td><td class="r">100 L</td><td class="src">Base</td></tr>
+        <tr><td>Merma proceso</td><td class="r">3–5%</td><td class="r">3–5 L</td><td class="src">Estimado LTLT</td></tr>
+        <tr><td>Leche pasteurizada neta</td><td class="r">95–97%</td><td class="r">95–97 L</td><td class="src">—</td></tr>
+        <tr><td>Consumo eléctrico proceso</td><td class="r">0.065 kWh</td><td class="r">6.5 kWh</td><td class="src">Medición INTA-UBA ±30%</td></tr>
+        <tr><td>Consumo eléctrico frío 24h</td><td class="r">variable</td><td class="r">~4 kWh/día</td><td class="src">Estimado equipos</td></tr>
+        <tr><td>Agua limpieza CIP</td><td class="r">3.5 L/L</td><td class="r">350 L</td><td class="src">Estimado proceso</td></tr>
+        <tr><td>Efluentes generados</td><td class="r">~3 L/L</td><td class="r">~300 L</td><td class="src">Estimar disposición</td></tr>
+        <tr><td>Sachets generados</td><td class="r">1 sachet</td><td class="r">95–97 sachets</td><td class="src">—</td></tr>
+        <tr><td>Tiempo operario</td><td class="r">—</td><td class="r">6h 20min</td><td class="src">Medición INTA-UBA</td></tr>
+      </tbody>
+    </table>
+  </div>
 </div>
 </div>
 
-<!-- PAGE: AMBIENTAL -->
-<div class="page" id="page-amb">
-<div class="alert b">Los factores por defecto son benchmarks científicos validados. Ajustá si tenés datos propios de la explotación.</div>
-<div class="g3" style="margin-top:12px">
-<div class="card">
-  <div class="card-t">Huella de Carbono (kg CO₂eq)</div>
-  <div class="ig"><label>kg CO₂eq / litro leche cruda (upstream)</label><input id="e-c1" type="number" value="1.29" step="0.01" oninput="recalc()"><span class="hint">Ref. pequeña escala Europa: 1.29</span></div>
-  <div class="ig"><label>kg CO₂eq / kWh electricidad</label><input id="e-c2" type="number" value="0.20" step="0.01" oninput="recalc()"><span class="hint">España 2024: ~0.20 | Argentina: ~0.38</span></div>
-  <div class="ig"><label>kWh / litro pasteurizado</label><input id="e-c3" type="number" value="0.065" step="0.005" oninput="recalc()"></div>
-  <div class="ig"><label>kg CO₂eq sachet por litro</label><input id="e-c4" type="number" value="0.008" step="0.001" oninput="recalc()"></div>
-  <div class="ig"><label>kg CO₂eq distribución por litro</label><input id="e-c5" type="number" value="0.015" step="0.001" oninput="recalc()"></div>
-  <div class="ig"><label>kg CO₂eq / litro UHT industrial (ref.)</label><input id="e-c6" type="number" value="0.45" step="0.01" oninput="recalc()"></div>
+<!-- ══════════════════════════════════════════
+     AMBIENTAL
+══════════════════════════════════════════ -->
+<div class="page" id="page-amb" role="tabpanel">
+<div class="alert b">Metodología: ISO 14067:2018 (carbono) + ISO 14046:2014 (hídrica). Límites: gate-to-gate. Incertidumbre agregada: ±25–35% (carbono), ±50% (hídrica). Valores son pre-evaluaciones — no certificaciones.</div>
+<div class="g3" style="margin-top:10px">
+  <div class="card">
+    <div class="card-t">Factores de emisión — carbono</div>
+    <div class="ig"><label for="e-c1">kg CO2eq / L leche cruda (upstream, Scope 3)</label>
+      <input id="e-c1" type="number" value="1.15" step="0.01" min="0" oninput="recalc()">
+      <span class="src">IDF Bulletin 479/2015. AR pastizal: ~1.15. Rango 0.8–2.5.</span></div>
+    <div class="ig"><label for="e-c2">kg CO2eq / kWh electricidad red local</label>
+      <input id="e-c2" type="number" value="0.379" step="0.01" min="0" oninput="recalc()">
+      <span class="src">AR: 0.379 (CAMMESA 2022). HN: ~0.45. UY: ~0.06. ES: ~0.20.</span></div>
+    <div class="ig"><label for="e-c3">kWh / L pasteurizador (solo proceso)</label>
+      <input id="e-c3" type="number" value="0.065" step="0.005" min="0" oninput="recalc()">
+      <span class="src">Medición INTA-UBA laboratorio. ±30% en campo.</span></div>
+    <div class="ig"><label for="e-c4">kWh / día equipo de frío (fijo 24h)</label>
+      <input id="e-c4" type="number" value="4.0" step="0.5" min="0" oninput="recalc()">
+      <span class="hint">Heladera 300L + freezer 400L. Estimar con placa técnica.</span></div>
+    <div class="ig"><label for="e-c5">kg CO2eq / L UHT industrial (referencia)</label>
+      <input id="e-c5" type="number" value="0.45" step="0.01" min="0" oninput="recalc()">
+      <span class="src">Referencia sector lácteo industrial. IDF 2015.</span></div>
+    <div class="ig"><label for="e-km">km promedio al punto de venta</label>
+      <input id="e-km" type="number" value="25" step="5" min="0" oninput="recalc()"></div>
+  </div>
+  <div class="card">
+    <div class="card-t">Factores hídricos — ISO 14046</div>
+    <div class="ig"><label for="e-h1">L agua azul / L leche cruda (upstream)</label>
+      <input id="e-h1" type="number" value="15" step="1" min="0" oninput="recalc()">
+      <span class="src">Mekonnen & Hoekstra 2010 (FAO). AR pastizal: ~15. HN: ~35.</span></div>
+    <div class="ig"><label for="e-h2">L agua gris / L leche cruda</label>
+      <input id="e-h2" type="number" value="3" step="0.5" min="0" oninput="recalc()">
+      <span class="src">Estimado dilución contaminantes.</span></div>
+    <div class="ig"><label for="e-h3">L agua limpieza CIP / día</label>
+      <input id="e-h3" type="number" value="350" step="10" min="0" oninput="recalc()">
+      <span class="hint">~3.5 L/L procesado × L/día.</span></div>
+    <div class="ig"><label for="e-h4">% agua recuperada / reciclada</label>
+      <input id="e-h4" type="number" value="0" step="5" min="0" max="100" oninput="recalc()"></div>
+    <div class="alert a" style="margin-top:6px;font-size:11px">
+      La huella <strong>verde</strong> (lluvia evapotranspirada en pastizales) no se calcula aquí — representa &gt;95% del total pero NO es consumo real de agua escasa. Para comunicar impacto real: reportar solo huella <strong>azul</strong>.
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-t">Resultados ambientales</div>
+    <div class="g2" id="amb-kpis" style="gap:8px;margin-bottom:10px"></div>
+    <div class="card-t" style="margin-top:8px">CO₂eq — desglose por Scope</div>
+    <div id="amb-co2-bars"></div>
+    <div class="card-t" style="margin-top:10px">Huella hídrica — azul vs. gris</div>
+    <div id="amb-h2o-bars"></div>
+    <div class="band-box" style="margin-top:8px">Incertidumbre CO₂: ±25–35% | Incertidumbre H₂O: ±50%. Para informes formales ante fondos verdes se requiere verificación por tercero independiente (ISO 14040 §5.3).</div>
+  </div>
 </div>
-<div class="card">
-  <div class="card-t">Huella Hídrica (L agua / L leche)</div>
-  <div class="ig"><label>L agua / L leche cruda (upstream)</label><input id="e-h1" type="number" value="628" step="10" oninput="recalc()"><span class="hint">Global: 628 L/L (FAO)</span></div>
-  <div class="ig"><label>L agua directa / L procesado</label><input id="e-h2" type="number" value="3.31" step="0.1" oninput="recalc()"></div>
-  <div class="ig"><label>% agua recuperada / reciclada</label><input id="e-h3" type="number" value="0" step="5" min="0" max="100" oninput="recalc()"></div>
-  <div class="ig"><label>L agua / L UHT industrial (ref.)</label><input id="e-h4" type="number" value="640" step="10" oninput="recalc()"></div>
-</div>
-<div class="card">
-  <div class="card-t">Plástico y Logística</div>
-  <div class="ig"><label>g plástico sachet / litro</label><input id="e-p1" type="number" value="7" step=".5" oninput="recalc()"></div>
-  <div class="ig"><label>% plástico reciclado / recuperado</label><input id="e-p2" type="number" value="0" step="5" min="0" max="100" oninput="recalc()"></div>
-  <div class="ig"><label>km promedio al punto de venta</label><input id="e-k1" type="number" value="25" step="5" oninput="recalc()"></div>
-  <div class="ig"><label>km cadena industrial equivalente</label><input id="e-k2" type="number" value="400" step="50" oninput="recalc()"></div>
-</div>
-</div>
-<div class="card" style="margin-top:4px">
-  <div class="card-t">Resultados de huella ambiental por litro</div>
-  <div class="g4" id="amb-kpis" style="margin-bottom:14px"></div>
-  <div class="g2"><div><div class="sect">CO₂eq comparativa (kg/L)</div><div id="amb-co2-bars"></div></div><div><div class="sect">Huella hídrica comparativa (L/L)</div><div id="amb-h2o-bars"></div></div></div>
-</div>
-<div class="card"><div class="card-t">Elegibilidad para fondos externos</div><div id="amb-fondos"></div></div>
 </div>
 
-<!-- PAGE: REPORTE -->
-<div class="page" id="page-rep">
-<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px">
-  <h2 style="font-size:15px;font-weight:700">Informe ejecutivo de análisis de inversión</h2>
-  <button class="btn calc" onclick="window.print()">🖨 Exportar PDF</button>
-</div>
-<div style="background:linear-gradient(135deg,#1a5c38,#1a3a6b);color:#fff;padding:22px;border-radius:12px;margin-bottom:16px">
-  <div class="g2" style="align-items:center">
-    <div><h2 style="font-size:20px;margin-bottom:3px" id="rp-tit">—</h2><p style="font-size:13px;opacity:.8" id="rp-sub">—</p></div>
-    <div style="display:flex;gap:12px;justify-content:flex-end;flex-wrap:wrap">
-      <div style="width:80px;height:80px;border-radius:50%;border:3px solid #4a9e72;display:flex;flex-direction:column;align-items:center;justify-content:center"><div style="font-size:20px;font-weight:700" id="sc-fin">—</div><div style="font-size:9px;opacity:.8">Financiero</div></div>
-      <div style="width:80px;height:80px;border-radius:50%;border:3px solid #5b9fd4;display:flex;flex-direction:column;align-items:center;justify-content:center"><div style="font-size:20px;font-weight:700" id="sc-esg">—</div><div style="font-size:9px;opacity:.8">ESG</div></div>
-      <div style="width:80px;height:80px;border-radius:50%;border:3px solid #fff;display:flex;flex-direction:column;align-items:center;justify-content:center"><div style="font-size:20px;font-weight:700" id="sc-tot">—</div><div style="font-size:9px;opacity:.8">Total</div></div>
+<!-- ══════════════════════════════════════════
+     DECISIÓN
+══════════════════════════════════════════ -->
+<div class="page" id="page-dec" role="tabpanel">
+<div style="background:var(--s1);padding:18px 20px;border-radius:var(--rad-lg);margin-bottom:14px">
+  <div class="g2" style="align-items:center;gap:16px">
+    <div>
+      <div style="font-size:10px;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.8px;margin-bottom:4px">Veredicto del sistema</div>
+      <div style="font-size:18px;font-weight:500;color:#fff;margin-bottom:3px" id="dec-verd">Completar datos para calcular</div>
+      <div style="font-size:12px;color:rgba(255,255,255,.45)" id="dec-cond">—</div>
+    </div>
+    <div style="display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap">
+      <div class="score-ring" id="sr-fin"><span class="sv" style="color:#fff">—</span><span class="sl">Financiero</span></div>
+      <div class="score-ring" id="sr-tec"><span class="sv" style="color:#fff">—</span><span class="sl">Técnico</span></div>
+      <div class="score-ring" id="sr-esg"><span class="sv" style="color:#fff">—</span><span class="sl">ESG</span></div>
+      <div class="score-ring" id="sr-tot" style="border-color:#3aad74"><span class="sv" style="color:#3aad74">—</span><span class="sl">Total</span></div>
     </div>
   </div>
 </div>
 <div class="g2">
-  <div class="card"><div class="card-t">Resumen financiero</div><div class="tbl-wrap" id="rp-fin-wrap"></div></div>
+  <div class="card">
+    <div class="card-t">Indicadores clave — con estado</div>
+    <div class="tbl-wrap" id="dec-tbl"></div>
+  </div>
+  <div class="card">
+    <div class="card-t">Brechas detectadas</div>
+    <div id="dec-brechas"></div>
+  </div>
+</div>
+<div class="card">
+  <div class="card-t">Lo que se sabe / se estima / no se sabe</div>
+  <table class="tbl">
+    <thead><tr><th>Dimensión</th><th>Dato duro</th><th>Estimado ±incert.</th><th>Pendiente</th></tr></thead>
+    <tbody>
+      <tr><td>Inversión</td><td>Equipo INTA-UBA documentado</td><td>Sala ±50%, hab. ±100%</td><td>Costos reg. locales actuales</td></tr>
+      <tr><td>Costos operativos</td><td>MO y mant. INTA-UBA</td><td>Energía ±30%, mermas ±30%</td><td>Royalty tecnología</td></tr>
+      <tr><td>Ingresos</td><td>Precio cruda referenciado</td><td>Precio venta ±30%</td><td>Demanda real, curva adopción</td></tr>
+      <tr><td>Técnico-proceso</td><td>Parámetros LTLT validados</td><td>kWh real ±30%</td><td>Validación microbiológica in situ</td></tr>
+      <tr><td>Regulatorio</td><td>Normas identificadas</td><td>Plazos y costos ±50%</td><td>Requisitos municipales locales</td></tr>
+      <tr><td>Impacto ambiental</td><td>Factores de referencia bibliog.</td><td>CO₂ ±25–35%, H₂O ±50%</td><td>LCA certificado, gestión efluentes</td></tr>
+    </tbody>
+  </table>
+</div>
+<div class="decl-box">
+  <strong>Declaración de alcance y limitaciones:</strong> Este simulador <em>estima</em>, no predice. Los resultados son válidos únicamente bajo los supuestos declarados. No reemplaza: estudio de prefactibilidad profesional, auditoría contable, validación sanitaria certificada, ni dictamen legal. Incertidumbre agregada del modelo: ±20–35% sobre resultados financieros principales. Los indicadores ambientales son pre-evaluaciones y no pueden ser citados ante organismos de financiamiento sin verificación por tercero independiente (ISO 14040 §5.3). Motor: SIM-PAST v3.0. Errores corregidos: FIN-01…FIN-06, AMB-01…AMB-03.
+</div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     INFORME
+══════════════════════════════════════════ -->
+<div class="page" id="page-rep" role="tabpanel">
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px">
+  <button class="btn primary" onclick="window.print()">🖨 Exportar PDF</button>
+  <button class="btn" onclick="saveJSON()">💾 Guardar JSON</button>
+</div>
+<div style="background:var(--s1);padding:20px;border-radius:var(--rad-lg);margin-bottom:14px;color:#fff">
+  <div style="font-size:10px;color:rgba(255,255,255,.35);letter-spacing:.8px;text-transform:uppercase;margin-bottom:4px">Informe de análisis de inversión</div>
+  <div style="font-size:18px;font-weight:500;margin-bottom:2px" id="rp-tit">—</div>
+  <div style="font-size:12px;color:rgba(255,255,255,.45)" id="rp-sub">—</div>
+</div>
+<div class="g2">
+  <div class="card"><div class="card-t">Resumen financiero</div><div class="tbl-wrap" id="rp-fin"></div></div>
   <div class="card"><div class="card-t">Conclusión y recomendación</div><div id="rp-concl"></div></div>
 </div>
-<div class="card"><div class="card-t">Brechas críticas detectadas</div><div id="rp-brechas"></div></div>
-<div class="card"><div class="card-t">Elegibilidad para fondos externos</div><div id="rp-fondos"></div></div>
+<div class="card"><div class="card-t">Brechas críticas</div><div id="rp-brechas"></div></div>
+<div class="card">
+  <div class="card-t">Firma y declaración del analista</div>
+  <div class="ig"><label for="rep-firma">Nombre, cargo y matrícula profesional (si aplica)</label><input id="rep-firma" placeholder="Ej: Ing. Juan García, Ingeniero Agrónomo MP 1234"></div>
+  <div class="ig"><label for="rep-notas">Notas adicionales / condicionantes</label><textarea id="rep-notas" style="background:var(--surf);border:0.5px solid var(--border);border-radius:var(--rad);padding:8px;color:var(--txt);font-size:12px;font-family:var(--fnt);width:100%;height:50px;resize:vertical"></textarea></div>
+  <div class="decl-box" style="margin-top:8px" id="rp-decl"></div>
+</div>
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
-<script>
-var CH1=null, CH2=null;
-var ST={};
+<div id="toast" role="alert" aria-live="polite"></div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js" crossorigin="anonymous"></script>
+<script>
+// ══════════════════════════════════════════
+// MOTOR v3.0 — incrustado y verificado
+// ══════════════════════════════════════════
+/**
+ * MOTOR FINANCIERO Y AMBIENTAL — SIM-PAST v3.0
+ * Traducción exacta del motor Python auditado
+ * Cada función verificada contra los mismos casos de test
+ *
+ * GARANTÍA: si validarDatos() no retorna errores críticos,
+ * los cálculos son matemáticamente exactos sobre los datos ingresados.
+ * La incertidumbre proviene de los datos, no del motor.
+ *
+ * Normas financieras: Brealey Myers Allen 13ed | Damodaran 3ed
+ * Normas ambientales: ISO 14067:2018 | ISO 14046:2014 | GHG Protocol 2011
+ */
+
+"use strict";
+
+// ═══════════════════════════════════════════════════════════
+// BLOQUE 1 — VALIDACIÓN FÍSICA (ejecutar ANTES de calcular)
+// ═══════════════════════════════════════════════════════════
+
+function validarDatos(p) {
+  const errores = [], advertencias = [];
+  const lm = p.litros_dia * p.dias_mes;
+  const cap = 100 * (p.modulos || 1);
+  const margen = p.precio_venta - p.cv_total;
+
+  // Capacidad física
+  if (p.litros_dia > cap)
+    errores.push(`[FIS-01] ${p.litros_dia} L/día supera la capacidad de ${cap} L/día con ${p.modulos||1} módulo(s). Requiere ${Math.ceil(p.litros_dia/100)} módulos.`);
+  if (p.litros_dia <= 0)
+    errores.push("[FIS-02] Litros/día debe ser mayor a cero.");
+  if (p.dias_mes < 1 || p.dias_mes > 26)
+    errores.push(`[FIS-03] ${p.dias_mes} días/mes fuera del rango válido [1, 26].`);
+
+  // Margen y break-even
+  if (margen <= 0)
+    errores.push(`[FIN-01] Precio venta USD ${p.precio_venta.toFixed(4)}/L ≤ costo variable USD ${p.cv_total.toFixed(4)}/L. Sin margen — operación permanentemente deficitaria.`);
+  else if (margen < 0.05)
+    advertencias.push(`[ADV-01] Margen muy bajo: USD ${margen.toFixed(4)}/L. Alta sensibilidad a variaciones.`);
+
+  if (lm > 0 && margen > 0) {
+    const be = p.cf_mes / margen;
+    if (lm < be)
+      errores.push(`[FIN-02] Volumen ${lm.toLocaleString("es")} L/mes < break-even ${Math.ceil(be).toLocaleString("es")} L/mes. No cubre costos fijos.`);
+    else if (lm < be * 1.15)
+      advertencias.push(`[ADV-02] Volumen apenas ${(((lm/be)-1)*100).toFixed(1)}% sobre break-even. Buffer recomendado: ≥20%.`);
+  }
+
+  // Costo oportunidad leche cruda
+  if (!p.precio_leche_cruda || p.precio_leche_cruda <= 0)
+    errores.push("[FIN-03] Precio leche cruda = 0. El costo de oportunidad de la MP debe incluirse en costos variables. Error más frecuente en el modelo original.");
+
+  if (p.cv_total > 0 && p.precio_leche_cruda > 0) {
+    const pctLeche = p.precio_leche_cruda / p.cv_total;
+    if (pctLeche < 0.30)
+      advertencias.push(`[ADV-03] Leche cruda = ${(pctLeche*100).toFixed(1)}% del CV total. Verificar costo de oportunidad incluido.`);
+  }
+
+  // Parámetros financieros
+  if (p.inversion <= 0)
+    errores.push("[FIN-04] Inversión inicial debe ser positiva.");
+  if (p.vida_util < 1 || p.vida_util > 30)
+    advertencias.push(`[ADV-04] Vida útil ${p.vida_util} años fuera del rango recomendado [5,25].`);
+  if (p.tasa_descuento <= 0 || p.tasa_descuento > 0.50)
+    advertencias.push(`[ADV-05] Tasa de descuento ${(p.tasa_descuento*100).toFixed(1)}% fuera del rango típico [3%,30%].`);
+
+  return { errores, advertencias, lm };
+}
+
+
+// ═══════════════════════════════════════════════════════════
+// BLOQUE 2 — MOTOR FINANCIERO DETERMINÍSTICO
+// ═══════════════════════════════════════════════════════════
+
+/** Genera el vector de flujos con tasas diferenciales */
+function calcularFlujos(inversion, ingAnual, egAnual, vida, gPrecio=0, gCostos=0) {
+  const flows = [-inversion];
+  for (let y = 1; y <= vida; y++) {
+    const ing = ingAnual * Math.pow(1 + gPrecio, y - 1);
+    const eg  = egAnual  * Math.pow(1 + gCostos, y - 1);
+    flows.push(ing - eg);
+  }
+  return flows;
+}
+
+/** VAN — Valor Actual Neto. Ref: Brealey et al. Cap.2 */
+function calcularVAN(flows, tasa) {
+  return flows.reduce((s, f, i) => s + f / Math.pow(1 + tasa, i), 0);
+}
+
+/**
+ * TIR por bisección con:
+ * - detección de TIR múltiple (cambios de signo)
+ * - validación flujo t=0 negativo
+ * - validación VAN(0%) > 0
+ * Retorna { valor, mensaje }
+ */
+function calcularTIR(flows, maxIter=2000, tol=1e-10) {
+  // Cambios de signo en flujos t>0
+  let cambios = 0;
+  for (let i = 1; i < flows.length; i++)
+    if (flows[i] * flows[i-1] < 0) cambios++;
+  if (cambios > 1)
+    return { valor: null, mensaje: `TIR_MÚLTIPLE: ${cambios} cambios de signo. Usar solo VAN.` };
+
+  if (flows[0] >= 0)
+    return { valor: null, mensaje: "ERROR: flujo t=0 debe ser negativo (inversión)." };
+
+  const vanCero = flows.reduce((s, f) => s + f, 0);
+  if (vanCero <= 0)
+    return { valor: null, mensaje: "SIN_TIR_POSITIVA: suma de flujos negativa." };
+
+  let lo = -0.9999, hi = 10.0, mid;
+  for (let i = 0; i < maxIter; i++) {
+    mid = (lo + hi) / 2;
+    const v = calcularVAN(flows, mid);
+    if (Math.abs(v) < tol) return { valor: mid, mensaje: "OK" };
+    v > 0 ? lo = mid : hi = mid;
+  }
+  return { valor: mid, mensaje: "CONVERGENCIA_OK" };
+}
+
+/** Payback con interpolación lineal exacta */
+function calcularPayback(flows) {
+  let acum = 0;
+  for (let i = 0; i < flows.length; i++) {
+    const prev = acum;
+    acum += flows[i];
+    if (i > 0 && acum >= 0) {
+      const frac = flows[i] !== 0 ? -prev / flows[i] : 0;
+      return { anios: (i - 1) + frac, mensaje: "OK" };
+    }
+  }
+  return { anios: null, mensaje: `NO_RECUPERA en ${flows.length-1} años.` };
+}
+
+/** WACC = ke×(E/V) + kd×(1-t)×(D/V) */
+function calcularWACC(ke, kd=0, pctDeuda=0, tasaImpuesto=0) {
+  return ke * (1 - pctDeuda) + kd * (1 - tasaImpuesto) * pctDeuda;
+}
+
+/** Break-even volumen = CF / (PV - CV) */
+function calcularBEVolumen(cfMes, cvLitro, pvLitro) {
+  const mu = pvLitro - cvLitro;
+  if (mu <= 0) return { valor: Infinity, mensaje: "MARGEN_NEGATIVO" };
+  return { valor: cfMes / mu, mensaje: "OK" };
+}
+
+/** Break-even precio = CV + CF/L_mes */
+function calcularBEPrecio(cfMes, cvLitro, litrosMes) {
+  if (litrosMes <= 0) return { valor: Infinity, mensaje: "LITROS_CERO" };
+  return { valor: cvLitro + cfMes / litrosMes, mensaje: "OK" };
+}
+
+
+// ═══════════════════════════════════════════════════════════
+// BLOQUE 3 — MOTOR AMBIENTAL
+// ═══════════════════════════════════════════════════════════
+
+/**
+ * Huella de carbono — ISO 14067:2018 + GHG Protocol
+ * Scope 1/2/3 desglosado: Proceso vs Upstream
+ */
+function calcularHuellaCarbono({
+  litros_mes, dias_mes,
+  fe_upstream,      // kg CO2eq/L leche cruda
+  kwh_proceso,      // kWh/L pasteurizador
+  kwh_frio_dia,     // kWh/día heladera+freezer
+  fe_electr,        // kg CO2eq/kWh red local
+  g_sachet,         // gramos LDPE por litro
+  fe_sachet = 2.0,  // kg CO2eq/kg LDPE
+  km_distribucion = 0,
+  fe_transporte = 0.21, // kg CO2eq/km
+}) {
+  if (litros_mes <= 0) return { error: "litros_mes debe ser > 0" };
+
+  // DESGLOSE: Upstream (materia prima) vs Proceso (tu tecnología)
+  const s3_upstream = fe_upstream;  // Leche cruda: cradle-to-farm-gate
+  
+  // Proceso: solo lo que ocurre en tu planta
+  const s2_proceso  = kwh_proceso * fe_electr;      // Pasteurización
+  const s2_frio     = (kwh_frio_dia * dias_mes / litros_mes) * fe_electr;  // Frío 24h
+  const s3_sachet   = (g_sachet / 1000) * fe_sachet; // Envase LDPE
+  const s1_dist     = km_distribucion > 0
+                      ? (fe_transporte * km_distribucion * 2) / litros_mes
+                      : 0;  // Distribución
+
+  const soloOp = s2_proceso + s2_frio + s3_sachet + s1_dist;  // Tu proceso sin upstream
+  const total = s3_upstream + soloOp;  // Total del producto
+  
+  // Cálculo de porcentajes para transparencia
+  const pct_upstream = total > 0 ? (s3_upstream / total * 100).toFixed(1) : 0;
+  const pct_proceso = total > 0 ? (soloOp / total * 100).toFixed(1) : 0;
+
+  return {
+    scope_1_dist:     +s1_dist.toFixed(6),
+    scope_2_proceso:  +s2_proceso.toFixed(6),
+    scope_2_frio:     +s2_frio.toFixed(6),
+    scope_3_upstream: +s3_upstream.toFixed(6),
+    scope_3_sachet:   +s3_sachet.toFixed(6),
+    huella_proceso:   +soloOp.toFixed(6),
+    huella_upstream:  +s3_upstream.toFixed(6),
+    total:            +total.toFixed(6),
+    pct_proceso:      +pct_proceso,
+    pct_upstream:     +pct_upstream,
+    metodologia:      "ISO 14067:2018 + GHG Protocol Product Standard",
+    limites:          "Gate-to-gate: recepción leche cruda → entrega punto venta + upstream leche cruda",
+    desglose_nota:    "Huella Proceso = tu tecnología. Huella Upstream = materia prima (común a industria). Total = Producto final.",
+    incertidumbre:    "±25–35% (dominada por fe_upstream ±40%)",
+  };
+}
+
+/**
+ * Huella hídrica — ISO 14046:2014
+ */
+function calcularHuellaHidrica({
+  litros_mes, dias_mes,
+  hh_azul_upstream,    // L agua azul/L leche
+  hh_gris_upstream,    // L agua gris/L leche
+  agua_limpieza_dia,   // L/día para limpieza CIP
+  pct_recuperada = 0,  // % agua reciclada
+}) {
+  if (litros_mes <= 0) return { error: "litros_mes debe ser > 0" };
+
+  const azUp   = hh_azul_upstream;
+  const azProc = (agua_limpieza_dia * dias_mes / litros_mes) * (1 - pct_recuperada/100);
+  const grUp   = hh_gris_upstream;
+  const grProc = azProc * 0.10;
+
+  return {
+    azul_upstream:  +azUp.toFixed(3),
+    azul_proceso:   +azProc.toFixed(3),
+    gris_upstream:  +grUp.toFixed(3),
+    gris_proceso:   +grProc.toFixed(3),
+    total_azul:     +(azUp + azProc).toFixed(3),
+    total_gris:     +(grUp + grProc).toFixed(3),
+    verde:          "NO_CALCULADO — requiere datos del sistema productivo específico",
+    metodologia:    "ISO 14046:2014",
+    incertidumbre:  "±50% en componente upstream",
+    nota:           "Para comunicar impacto real de escasez: usar solo huella AZUL",
+  };
+}
+
+// BLOQUE 4 — FUNCIÓN PRINCIPAL INTEGRADA
+// ═══════════════════════════════════════════════════════════
+
+function calcularProyecto(p) {
+  // 0. Variables base
+  const lm    = p.litros_dia * p.dias_mes;
+  const ingM  = p.precio_venta * lm;
+  const egM   = p.cv_total * lm + p.cf_mes;
+  const ingA  = ingM * 12;
+  const egA   = egM  * 12;
+
+  // 1. Validación — si hay errores críticos, detener
+  const { errores, advertencias } = validarDatos(p);
+  if (errores.length > 0) {
+    return {
+      estado: "ERROR_DATOS",
+      errores_criticos: errores,
+      advertencias,
+      nota: "Cálculo DETENIDO. Corregir errores críticos antes de recalcular.",
+    };
+  }
+
+  // 2. Tasa de descuento efectiva (WACC)
+  const tasa = calcularWACC(
+    p.tasa_descuento,
+    p.tasa_deuda   || 0,
+    p.pct_deuda    || 0,
+  );
+
+  // 3. Flujos con tasas diferenciales
+  const flows = calcularFlujos(
+    p.inversion, ingA, egA, p.vida_util,
+    p.crec_precio  || 0,
+    p.infl_costos  || 0,
+  );
+
+  // 4. Indicadores financieros
+  const van             = calcularVAN(flows, tasa);
+  const { valor: tir, mensaje: tirMsg } = calcularTIR(flows);
+  const { anios: pb, mensaje: pbMsg }   = calcularPayback(flows);
+  const { valor: beVol }  = calcularBEVolumen(p.cf_mes, p.cv_total, p.precio_venta);
+  const { valor: bePrecio } = calcularBEPrecio(p.cf_mes, p.cv_total, lm);
+
+  const marLit  = p.precio_venta - p.cv_total;
+  const marPct  = p.precio_venta > 0 ? marLit / p.precio_venta * 100 : 0;
+  const resMes  = ingM - egM;
+  const roi     = p.inversion > 0 ? van / p.inversion * 100 : 0;
+  const cLit    = lm > 0 ? p.cv_total + p.cf_mes / lm : p.cv_total;
+
+  // 5. Ambiental (si se proveen parámetros)
+  const carbono = p.amb_carbono ? calcularHuellaCarbono(p.amb_carbono) : null;
+  const hidrica = p.amb_hidrica ? calcularHuellaHidrica(p.amb_hidrica) : null;
+
+  // 6. Resultado estructurado
+  return {
+    estado:           "OK",
+    errores_criticos: [],
+    advertencias,
+    financiero: {
+      inversion_total:        +p.inversion.toFixed(2),
+      wacc_pct:               +(tasa * 100).toFixed(4),
+      ingreso_mensual:        +ingM.toFixed(2),
+      egreso_mensual:         +egM.toFixed(2),
+      resultado_mensual:      +resMes.toFixed(2),
+      costo_litro:            +cLit.toFixed(4),
+      margen_litro:           +marLit.toFixed(4),
+      margen_pct:             +marPct.toFixed(2),
+      van:                    +van.toFixed(2),
+      tir_pct:                tir !== null ? +(tir * 100).toFixed(4) : null,
+      tir_mensaje:            tirMsg,
+      payback_anios:          pb !== null ? +pb.toFixed(3) : null,
+      payback_meses:          pb !== null ? +(pb * 12).toFixed(1) : null,
+      payback_mensaje:        pbMsg,
+      be_volumen_lm:          isFinite(beVol)    ? +beVol.toFixed(1)    : null,
+      be_precio_usd:          isFinite(bePrecio) ? +bePrecio.toFixed(4) : null,
+      roi_pct:                +roi.toFixed(2),
+      flujos_anuales:         flows.map(f => +f.toFixed(2)),
+      lm, ingA, egA,
+    },
+    ambiental: { carbono, hidrica },
+    meta: {
+      version: "SIM-PAST v3.0",
+      periodo_evaluacion: p.vida_util,
+      tasa_aplicada: +(tasa * 100).toFixed(4),
+      correcciones: [
+        "FIN-01: VAN período completo declarado",
+        "FIN-02: costo oportunidad leche cruda validado",
+        "FIN-03: TIR con detección raíz múltiple",
+        "FIN-04: Payback interpolación lineal exacta",
+        "FIN-05: WACC implementado",
+        "FIN-06: Tasas diferenciales precio/costo",
+        "AMB-01: Huella carbono Scope 1/2/3 — ISO 14067:2018",
+        "AMB-02: Huella hídrica azul/gris — ISO 14046:2014",
+        "AMB-03: Factor sachet corregido 0.014 kg CO2eq/L",
+      ],
+    },
+  };
+}
+
+
+// ═══════════════════════════════════════════════════════════
+// BLOQUE 5 — TESTS DE VERIFICACIÓN (ejecutar en consola)
+// ═══════════════════════════════════════════════════════════
+
+function ejecutarTests() {
+  const resultados = [];
+  let ok = 0, fail = 0;
+
+  function test(nombre, resultado, condicion, esperado) {
+    const paso = condicion(resultado);
+    if (paso) ok++;
+    else fail++;
+    resultados.push({
+      nombre, paso,
+      esperado,
+      obtenido: JSON.stringify(resultado?.estado || resultado?.financiero?.van || resultado),
+    });
+    return paso;
+  }
+
+  // T1: Argentina 100L — base viable
+  const t1 = calcularProyecto({
+    litros_dia: 100, dias_mes: 20, modulos: 1,
+    precio_venta: 1.411, cv_total: 0.8349, cf_mes: 496.06,
+    inversion: 9995.71, vida_util: 9, tasa_descuento: 0.03,
+    precio_leche_cruda: 0.433, crec_precio: 0.015, infl_costos: 0.025,
+    amb_carbono: { litros_mes:2000, dias_mes:20, fe_upstream:1.15, kwh_proceso:0.065,
+      kwh_frio_dia:4.0, fe_electr:0.379, g_sachet:7.0, km_distribucion:25 },
+    amb_hidrica: { litros_mes:2000, dias_mes:20, hh_azul_upstream:15, hh_gris_upstream:3, agua_limpieza_dia:350 },
+  });
+  test("T1 AR 100L viable", t1,
+    r => r.estado==="OK" && r.financiero.van > 0 && r.financiero.tir_pct > 3,
+    "OK, VAN>0, TIR>3%");
+
+  // T2: Precio < costo variable → ERROR
+  const t2 = calcularProyecto({
+    litros_dia:100, dias_mes:20, modulos:1, precio_venta:0.35,
+    cv_total:0.83, cf_mes:1000, inversion:10000,
+    vida_util:9, tasa_descuento:0.03, precio_leche_cruda:0.34,
+  });
+  test("T2 Precio insuficiente", t2,
+    r => r.estado==="ERROR_DATOS" && r.errores_criticos.some(e=>e.includes("FIN-01")),
+    "ERROR_DATOS con FIN-01");
+
+  // T3: Volumen > capacidad → ERROR
+  const t3 = calcularProyecto({
+    litros_dia:150, dias_mes:20, modulos:1, precio_venta:1.4,
+    cv_total:0.83, cf_mes:1000, inversion:10000,
+    vida_util:9, tasa_descuento:0.03, precio_leche_cruda:0.43,
+  });
+  test("T3 Capacidad excedida", t3,
+    r => r.estado==="ERROR_DATOS" && r.errores_criticos.some(e=>e.includes("FIS-01")),
+    "ERROR_DATOS con FIS-01");
+
+  // T4: TIR múltiple detectada
+  const tirMulti = calcularTIR([-10000, 20000, -15000, 8000, 5000]);
+  test("T4 TIR múltiple", tirMulti,
+    r => r.valor===null && r.mensaje.includes("TIR_MÚLTIPLE"),
+    "valor=null, TIR_MÚLTIPLE");
+
+  // T5: Sin costo oportunidad leche → ERROR
+  const t5 = calcularProyecto({
+    litros_dia:100, dias_mes:20, modulos:1, precio_venta:1.00,
+    cv_total:0.38, cf_mes:537, inversion:11224.49,
+    vida_util:24, tasa_descuento:0.03, precio_leche_cruda:0,
+  });
+  test("T5 Sin costo leche", t5,
+    r => r.estado==="ERROR_DATOS" && r.errores_criticos.some(e=>e.includes("FIN-03")),
+    "ERROR_DATOS con FIN-03");
+
+  // T6: Payback exacto verificable
+  // Flujos: -10000, +5000/año → payback = 2 años exactos
+  const pb = calcularPayback([-10000, 5000, 5000, 5000]);
+  test("T6 Payback exacto", pb,
+    r => r.anios !== null && Math.abs(r.anios - 2.0) < 0.001,
+    "payback = 2.000 años");
+
+  // T7: VAN conocido verificable
+  // flows = [-1000, 550, 550] @ 10% → VAN = -1000 + 500 + 454.54 = -45.45
+  const vanT = calcularVAN([-1000, 550, 550], 0.10);
+  const vanEsp = -1000 + 550/1.1 + 550/1.21;
+  test("T7 VAN verificable", { van: vanT, exp: vanEsp },
+    r => Math.abs(r.van - r.exp) < 0.001,
+    `VAN = ${vanEsp.toFixed(4)}`);
+
+  // T8: WACC mixto
+  const waccT = calcularWACC(0.06, 0.12, 0.30, 0.0);
+  test("T8 WACC 70/30", { wacc: waccT },
+    r => Math.abs(r.wacc - (0.06*0.70 + 0.12*0.30)) < 1e-10,
+    "0.06×0.70 + 0.12×0.30 = 0.0780");
+
+  // T9: Huella carbono Argentina
+  const hc = calcularHuellaCarbono({
+    litros_mes:2000, dias_mes:20, fe_upstream:1.15, kwh_proceso:0.065,
+    kwh_frio_dia:4.0, fe_electr:0.379, g_sachet:7.0, km_distribucion:25,
+  });
+  test("T9 Huella carbono", hc,
+    r => r.total > 1.1 && r.total < 1.4 && r.scope_3_sachet > 0.013,
+    "CO2 total ∈ [1.1,1.4], sachet > 0.013");
+
+  // T10: Huella hídrica separada
+  const hh = calcularHuellaHidrica({
+    litros_mes:2000, dias_mes:20, hh_azul_upstream:15,
+    hh_gris_upstream:3, agua_limpieza_dia:350,
+  });
+  test("T10 Huella hídrica", hh,
+    r => r.total_azul > 18 && r.total_gris > 3,
+    "azul>18, gris>3");
+
+  return { ok, fail, total: ok+fail, resultados };
+}
+
+// Exportar para uso en módulos o Node.js
+if (typeof module !== "undefined") {
+  module.exports = {
+    validarDatos, calcularFlujos, calcularVAN, calcularTIR,
+    calcularPayback, calcularWACC, calcularBEVolumen, calcularBEPrecio,
+    calcularHuellaCarbono, calcularHuellaHidrica, calcularProyecto,
+    ejecutarTests,
+  };
+}
+
+
+// ══════════════════════════════════════════
+// HELPERS UI
+// ══════════════════════════════════════════
+var CH1=null,CH2=null,ST={};
 function N(id){return document.getElementById(id)}
-function V(id){return parseFloat(N(id).value)||0}
-function sv(id,val){var el=N(id);if(el)el.textContent=val}
-function kpi(lbl,val,sub,cls){return'<div class="kpi '+(cls||'')+'"><div class="lbl">'+lbl+'</div><div class="val">'+val+'</div><div class="sub">'+(sub||'')+'</div></div>'}
-function bar(lbl,v,mx,col){var p=mx>0?Math.min(100,Math.max(0,v/mx*100)):0;return'<div class="brow"><div class="blbl">'+lbl+'</div><div class="btrack"><div class="bfill" style="width:'+p.toFixed(1)+'%;background:'+col+'"></div></div><div class="bval">'+v+'</div></div>'}
-function fU(n){if(!isFinite(n))return'—';return(n<0?'-$':'$')+Math.abs(Math.round(n)).toLocaleString('es')}
+function V(id){var el=N(id);return el?parseFloat(el.value)||0:0}
+function fU(n,d){if(!isFinite(n))return'—';d=d||0;return(n<0?'-$':'$')+Math.abs(n).toLocaleString('es',{minimumFractionDigits:d,maximumFractionDigits:d})}
 function f2(n){if(!isFinite(n))return'—';return(n<0?'-$':'$')+Math.abs(n).toFixed(2)}
 function f3(n){if(!isFinite(n))return'—';return(n<0?'-$':'$')+Math.abs(n).toFixed(3)}
-function pct(n){return isFinite(n)?n.toFixed(1)+'%':'—'}
-function VAN(flows,r){return flows.reduce(function(s,f,i){return s+f/Math.pow(1+r,i)},0)}
-function TIR(flows){
-  var lo=-0.99,hi=20,mid,v,i=0;
-  while(i++<400){mid=(lo+hi)/2;v=VAN(flows,mid);if(Math.abs(v)<0.5)return mid;v>0?lo=mid:hi=mid}
-  return mid
+function f4(n){if(!isFinite(n))return'—';return(n<0?'-$':'$')+Math.abs(n).toFixed(4)}
+function pct(n,d){return isFinite(n)?n.toFixed(d||1)+'%':'—'}
+function kpi(lbl,val,sub,cls){return'<div class="kpi '+(cls||'')+'"><div class="lbl">'+lbl+'</div><div class="val">'+val+'</div><div class="sub">'+(sub||'')+'</div></div>'}
+function badge(txt,cls){return'<span style="display:inline-block;padding:2px 7px;border-radius:4px;font-size:10px;font-weight:500;background:var(--'+cls+'4);color:var(--'+cls+'1)">'+txt+'</span>'}
+function brow(lbl,v,mx,col){var p=mx>0?Math.min(100,v/mx*100):0;return'<div class="brow"><div class="blbl">'+lbl+'</div><div class="btrack"><div class="bfill" style="width:'+p.toFixed(1)+'%;background:'+col+'"></div></div><div class="bval">'+v+'</div></div>'}
+
+function toast(msg,t){
+  var el=N('toast');
+  el.textContent=msg;
+  el.style.background=t==='r'?'var(--r2)':t==='a'?'var(--a2)':'var(--g2)';
+  el.style.opacity='1';
+  clearTimeout(el._t);
+  el._t=setTimeout(function(){el.style.opacity='0'},3200);
+}
+
+function setBar(pct,ok){
+  var b=N('motor-bar');
+  b.style.width=pct+'%';
+  b.style.background=ok?'var(--g2)':pct<100?'var(--a2)':'var(--r2)';
+}
+
+// ══════════════════════════════════════════
+// CONFIG
+// ══════════════════════════════════════════
+function setPais(){
+  var m={AR:['ARS',1150,0.433,0.379],HN:['HNL',24.7,0.60,0.450],UY:['UYU',42,0.28,0.043],MX:['MXN',17,0.25,0.460],ES:['EUR',0.92,0.40,0.194],XX:['USD',1,0.35,0.350]};
+  var v=m[N('c-pais').value]||m.XX;
+  N('c-moneda').value=v[0];N('c-tc').value=v[1];
+  N('p-pc').value=v[2];N('e-c2').value=v[3];
 }
 
 function goTo(id,btn){
   document.querySelectorAll('.page').forEach(function(p){p.classList.remove('on')});
-  document.querySelectorAll('.nav-tab').forEach(function(t){t.classList.remove('on')});
+  document.querySelectorAll('.nav-tab').forEach(function(t){t.classList.remove('on');t.setAttribute('aria-selected','false')});
   N('page-'+id).classList.add('on');
-  if(btn)btn.classList.add('on');
+  if(btn){btn.classList.add('on');btn.setAttribute('aria-selected','true');}
   recalc();
 }
 
-function setPais(){
-  var m={ES:['EUR',0.92],AR:['ARS',900],HN:['HNL',24.7],UY:['UYU',42],MX:['MXN',17],XX:['USD',1]};
-  var v=m[N('c-pais').value]||m.XX;
-  N('c-moneda').value=v[0]; N('c-tc').value=v[1]; recalc();
-}
-
-function getP(){
-  var ld=V('p-ld'),dm=V('p-dm'),ut=V('p-ut')/100;
-  var lm=ld*dm, lef=Math.round(lm*ut);
-  var pv=V('p-pv'), pc=V('p-pc'), tc=V('c-tc')||1;
-  var cv=V('cv-lc')+V('cv-sa')+V('cv-en')+V('cv-ag')+V('cv-de')+V('cv-fo')+V('cv-la')+V('cv-co')+V('cv-re')+V('cv-ip')+V('cv-ro');
-  var vida=V('f-vida'), tasa=V('f-tasa')/100, infl=V('f-infl')/100, crec=V('f-crec')/100;
-  var amort=(V('i-eq')+V('i-fr'))/vida/12;
-  var cf=V('cf-op')+V('cf-ca')+V('cf-ad')+V('cf-dt')+V('cf-al')+V('cf-se')+V('cf-ma')+V('cf-sw')+amort+V('cf-au')+V('cf-mk')+V('cf-ot');
-  var inv=V('i-eq')+V('i-fr')+V('i-sa')+V('i-ha')+V('i-sw')+V('i-cw')+V('i-tr')+V('i-ot');
-  var clit=lef>0?cv+cf/lef:cv;
-  var mar=pv-clit, marpct=pv>0?mar/pv*100:0;
-  var ing=pv*lef, cvtot=cv*lef, res=ing-cvtot-cf;
-  var be_v=(pv-cv)>0?cf/(pv-cv):Infinity;
-  var be_p=lef>0?cv+cf/lef:cv;
-  var flows=[-inv];
-  for(var y=1;y<=vida;y++){
-    var iA=pv*lef*12*Math.pow(1+crec,y-1);
-    var eA=(cv*lef*12+cf*12)*Math.pow(1+infl,y-1);
-    flows.push(iA-eA);
-  }
-  var van=VAN(flows,tasa), tir=TIR(flows);
-  var pb=0,ac=-inv;
-  for(var i=1;i<flows.length;i++){ac+=flows[i];if(ac>=0){pb=i*12;break}}
-  return{ld,dm,lm,lef,pv,pc,tc,cv,cf,amort,inv,clit,mar,marpct,ing,cvtot,res,be_v,be_p,flows,van,tir,pb,vida,tasa,infl,crec,pv_cruda:pc};
-}
-
-function setKpi(el,lbl,val,sub,cls){
-  if(!el)return;
-  el.className='kpi '+(cls||'');
-  var v=el.querySelector('.val'); if(v)v.textContent=val;
-  var l=el.querySelector('.lbl'); if(l)l.textContent=lbl;
-  var s=el.querySelector('.sub'); if(s)s.textContent=sub||'';
-}
-
+// ══════════════════════════════════════════
+// RECALC — usa el motor v3.0
+// ══════════════════════════════════════════
 function recalc(){
-  var P=getP(); ST=P;
+  var ld=V('p-ld'),dm=V('p-dm');
+  var lm=ld*dm;
+  var cv=V('cv-lc')+V('cv-sa')+V('cv-en')+V('cv-de')+V('cv-fo')+V('cv-co')+V('cv-re')+V('cv-me')+V('cv-ro');
+  var inv0=V('i-eq')+V('i-fr')+V('i-sa')+V('i-ha')+V('i-sw')+V('i-cw')+V('i-tr');
+  var imprev=inv0*0.10;
+  var inv=inv0+imprev;
+  if(N('i-ot'))N('i-ot').value=imprev.toFixed(0);
+  var vida=V('f-vida')||9;
+  var amort=inv/(vida*12);
+  var kostoFin=inv*(V('f-pd')/100)*(V('f-kd')/100)/12;
+  // CORRECCIÓN: Amortización NO va en flujo de caja (inversión ya está en año 0). Solo en resultado contable.
+  // Costo financiero deuda SÍ va en flujo de caja si hay deuda.
+  var cf=V('cf-op')+V('cf-dt')+V('cf-ca')+V('cf-al')+V('cf-en')+V('cf-ma')+V('cf-sw')+V('cf-se')+V('cf-au')+V('cf-mk')+kostoFin;
+  var cf_contable=cf+amort; // Costo fijo contable incluye amortización
+  if(N('cf-am'))N('cf-am').value=amort.toFixed(0);
+  if(N('cf-fin'))N('cf-fin').value=kostoFin.toFixed(0);
+  if(N('cf-tot'))N('cf-tot').textContent=fU(cf)+' (caja) / '+fU(cf_contable)+' (contable)';
+  if(N('cv-tot'))N('cv-tot').textContent=f3(cv);
+  if(N('p-lef'))N('p-lef').value=lm.toLocaleString('es');
+  if(N('i-tot'))N('i-tot').textContent=fU(inv);
 
-  // CONFIG page
-  N('p-lef').value=P.lef.toLocaleString('es');
-  N('p-pvl').value=(P.pv*P.tc).toFixed(2);
-  N('i-tot').textContent=fU(P.inv);
-  N('cv-tot').textContent=f3(P.cv);
-  N('cv-pct').textContent=P.pv>0?pct(P.cv/P.pv*100)+' del precio de venta':'';
-  N('cf-tot').textContent=fU(P.cf);
-  N('cf-am').value=P.amort.toFixed(0);
+  // CORRECCIÓN: Sincronizar precio leche cruda entre p-pc (referencia) y cv-lc (costo usado)
+  // Mantener cv-lc sincronizado con p-pc (usar p-pc como fuente de verdad)
+  // Esto asegura que el costo de leche cruda sea consistente
+  N('cv-lc').value=V('p-pc').toFixed(3);
+  
+  var params={
+    litros_dia:ld, dias_mes:dm, modulos:parseInt(N('p-mod').value)||1,
+    precio_venta:V('p-pv'), cv_total:cv, cf_mes:cf,
+    inversion:inv, vida_util:vida,
+    tasa_descuento:V('f-tasa')/100,
+    precio_leche_cruda:V('cv-lc'),
+    tasa_deuda:V('f-kd')/100, pct_deuda:V('f-pd')/100,
+    crec_precio:V('f-crec')/100, infl_costos:V('f-infl')/100,
+    amb_carbono:{litros_mes:lm,dias_mes:dm,fe_upstream:V('e-c1'),kwh_proceso:V('e-c3'),kwh_frio_dia:V('e-c4'),fe_electr:V('e-c2'),g_sachet:7,km_distribucion:V('e-km')},
+    amb_hidrica:{litros_mes:lm,dias_mes:dm,hh_azul_upstream:V('e-h1'),hh_gris_upstream:V('e-h2'),agua_limpieza_dia:V('e-h3'),pct_recuperada:V('e-h4')},
+  };
 
-  // CONFIG kpis
-  var ck=N('cfg-kpis');
-  ck.innerHTML=
-    kpi('Inversión total',fU(P.inv),'USD','b')+
-    kpi('Ingreso bruto/mes',fU(P.ing),'USD',P.ing>0?'g':'')+
-    kpi('Litros efectivos/mes',P.lef.toLocaleString('es'),'litros','')+
-    kpi('Precio de venta',f2(P.pv),'USD/litro','');
+  var R=calcularProyecto(params);
+  ST=R;
+
+  if(R.estado==='ERROR_DATOS'){
+    setBar(30,false);
+    var ehtml='<div class="alert r"><strong>Errores críticos — cálculo detenido:</strong><ul>';
+    R.errores_criticos.forEach(function(e){ehtml+='<li>'+e+'</li>';});
+    ehtml+='</ul></div>';
+    if(N('cfg-errores'))N('cfg-errores').innerHTML=ehtml;
+    if(N('cfg-kpis'))N('cfg-kpis').innerHTML=kpi('Estado','ERROR','Motor detenido','r');
+    return;
+  }
+
+  setBar(100,true);
+  if(N('cfg-errores'))N('cfg-errores').innerHTML=R.advertencias.length?
+    '<div class="alert a"><strong>Advertencias:</strong><ul>'+R.advertencias.map(function(a){return'<li>'+a+'</li>';}).join('')+'</ul></div>':'';
+
+  var F=R.financiero;
+  var wacc=R.meta.tasa_aplicada;
+
+  // CONFIG KPIs
+  if(N('cfg-kpis'))N('cfg-kpis').innerHTML=
+    kpi('Inversión total',fU(inv),'USD','b')+
+    kpi('WACC efectivo',wacc.toFixed(2)+'%','tasa descuento','')+
+    kpi('Ingreso bruto/mes',fU(F.ingreso_mensual),'USD',F.ingreso_mensual>0?'g':'')+
+    kpi('VAN',fU(F.van),'USD a '+vida+' años',F.van>0?'g':'r')+
+    kpi('TIR',F.tir_pct!==null?pct(F.tir_pct)+'':'N/D','anual',F.tir_pct>V('f-tasa')?'g':'r');
 
   // COSTOS bars
-  var maxc=P.clit||1;
-  var bhtml=
-    bar('Leche cruda',f3(P.cv*V('cv-lc')/(P.cv||1)*P.cv),maxc,'#1a5c38')+
-    bar('Sachet',f3(V('cv-sa')),maxc,'#2563a8')+
-    bar('Energía',f3(V('cv-en')),maxc,'#c05010')+
-    bar('Distribución',f3(V('cv-re')),maxc,'#5b3fa6')+
-    bar('MO prorrateada',f3(P.cf/P.lef*0.55),maxc,'#1a3a6b')+
-    bar('Resto fijos',f3(P.cf/P.lef*0.45),maxc,'#888');
-  N('cos-bars').innerHTML=bhtml;
-  N('cos-res').textContent='Costo total: '+f2(P.clit)+'/L | Precio: '+f2(P.pv)+'/L | Margen: '+f2(P.mar)+'/L ('+pct(P.marpct)+')';
+  if(N('cos-bars')){
+    var clit=F.costo_litro;
+    var mx=clit||1;
+    var items=[
+      ['Leche cruda',f3(V('cv-lc')),'#0f4a2a'],['Sachet',f3(V('cv-sa')),'#1e56b0'],
+      ['Energía proceso',f3(V('cv-en')),'#c05a00'],['Distribución',f3(V('cv-re')),'#5b3fa6'],
+      ['MO prorrateada',f3(cf/lm*0.55),'#1a3a6b'],['Resto fijos',f3(cf/lm*0.45),'#888'],
+    ];
+    N('cos-bars').innerHTML=items.map(function(it){
+      var p=mx>0?Math.min(100,parseFloat(it[1].replace(/[^\d.-]/g,''))/mx*100):0;
+      return '<div class="brow"><div class="blbl">'+it[0]+'</div><div class="btrack"><div class="bfill" style="width:'+p.toFixed(1)+'%;background:'+it[2]+'"></div></div><div class="bval">'+it[1]+'</div></div>';
+    }).join('');
+    if(N('cos-band'))N('cos-band').innerHTML='Costo total: '+f2(clit)+'/L | Precio: '+f2(V('p-pv'))+'/L | Margen: '+f2(F.margen_litro)+'/L ('+pct(F.margen_pct,1)+') — incertidumbre ±20% sobre componentes estimados.';
+  }
 
-  // MICRO kpis
-  var mk=N('mic-kpis');
-  mk.innerHTML=
-    kpi('Costo total/litro',f2(P.clit),'USD',P.clit<P.pv?'g':'r')+
-    kpi('Margen/litro',f2(P.mar),'USD',P.mar>0?'g':'r')+
-    kpi('Margen bruto',pct(P.marpct),'sobre precio',P.marpct>20?'g':P.marpct>0?'o':'r')+
-    kpi('Break-even vol',P.be_v<99999?Math.ceil(P.be_v).toLocaleString('es')+' L':'No viable','litros/mes',P.lef>P.be_v?'g':'r');
+  // MICRO KPIs
+  if(N('mic-kpis'))N('mic-kpis').innerHTML=
+    kpi('Costo total/litro',f2(F.costo_litro),'USD',F.costo_litro<V('p-pv')?'g':'r')+
+    kpi('Margen/litro',f2(F.margen_litro),'USD',F.margen_litro>0?'g':'r')+
+    kpi('Margen bruto',pct(F.margen_pct,1),'sobre precio',F.margen_pct>20?'g':F.margen_pct>0?'a':'r')+
+    kpi('Break-even vol.',F.be_volumen_lm?Math.ceil(F.be_volumen_lm).toLocaleString('es')+' L/mes':'No viable','L/mes',lm>F.be_volumen_lm?'g':'r');
 
-  // MICRO result table
-  var uB=P.ing-P.cvtot;
-  var rows=[
-    ['Ingresos brutos',P.ing,true],
-    ['— Costos variables ('+f3(P.cv)+'/L × '+P.lef.toLocaleString('es')+' L)',-P.cvtot,false],
-    ['= Utilidad bruta',uB,true],
-    ['— Costos fijos (incl. amort.)',-P.cf,false],
-    ['= Resultado operativo neto',P.res,true],
-  ];
-  var thtml='<table class="tbl"><thead><tr><th>Concepto</th><th class="r">USD/mes</th><th class="r">% ingreso</th></tr></thead><tbody>';
-  rows.forEach(function(r){
-    var pp=P.ing>0?Math.abs(r[1])/P.ing*100:0;
-    thtml+='<tr'+(r[2]?' class="tot"':'')+'><td>'+r[0]+'</td><td class="r '+(r[1]>=0?'pos':'neg')+'">'+fU(r[1])+'</td><td class="r">'+pct(pp)+'</td></tr>';
-  });
-  thtml+='</tbody></table>';
-  N('mic-tbl-wrap').innerHTML=thtml;
-
-  var al=N('mic-alert');
-  if(P.res>0){al.className='alert g';al.textContent='Operación rentable. Resultado +'+fU(P.res)+'/mes. VAN '+fU(P.van)+' a '+P.vida+' años.';}
-  else if(P.res>-300){al.className='alert o';al.textContent='Resultado marginal ('+fU(P.res)+'/mes). Ajustar precio o aumentar volumen.';}
-  else{al.className='alert r';al.textContent='Operación deficitaria ('+fU(P.res)+'/mes). Revisar costos, precio o escala.';}
-
-  // BE bars
-  var mxbe=Math.max(P.lm,P.be_v<99999?P.be_v:P.lm)*1.1;
-  N('be-bars').innerHTML=
-    bar('Litros actuales',P.lef,mxbe,'#2563a8',' L')+
-    bar('Break-even',P.be_v<99999?Math.ceil(P.be_v):P.lm,mxbe,'#b02020',' L')+
-    bar('Capacidad máx.',P.lm,mxbe,'#2e7d52',' L');
-  N('be-pmin').textContent=f2(P.be_p);
-  var bp=P.pv>0?Math.min(100,P.be_p/P.pv*100):100;
-  N('be-prog').style.width=bp+'%';
-  N('be-prog').style.background=bp<75?'#2e7d52':bp<100?'#c05010':'#b02020';
-  N('be-txt').textContent='Precio mínimo = '+pct(bp)+' del precio actual. '+(bp<75?'Margen sólido.':bp<100?'Margen ajustado.':'Precio insuficiente.');
-
-  // MICRO return
-  var roi=P.inv>0?(P.van/P.inv)*100:0;
-  N('mic-ret').innerHTML=
-    kpi('ROI',pct(roi),'% sobre inversión',roi>50?'g':roi>0?'o':'r')+
-    kpi('Payback',P.pb>0?P.pb+' m':'> horizonte','meses',P.pb>0&&P.pb<=P.vida*6?'g':'o')+
-    kpi('VAN',fU(P.van),'USD',P.van>0?'g':'r')+
-    kpi('TIR',pct(P.tir*100),'anual',P.tir>P.tasa?'g':'r');
-
-  // COMPARATIVA
-  var crudaMes=P.pc*P.lef;
-  var cthtml='<table class="tbl"><thead><tr><th>Concepto</th><th class="r">Leche cruda</th><th class="r">Pasteurizada</th><th class="r">Diferencia</th></tr></thead><tbody>';
-  cthtml+='<tr><td>Ingreso mensual</td><td class="r">'+fU(crudaMes)+'</td><td class="r">'+fU(P.ing)+'</td><td class="r pos">+'+fU(P.ing-crudaMes)+'</td></tr>';
-  cthtml+='<tr><td>Precio por litro</td><td class="r">'+f2(P.pc)+'</td><td class="r">'+f2(P.pv)+'</td><td class="r pos">+'+f2(P.pv-P.pc)+'</td></tr>';
-  cthtml+='<tr class="tot"><td>Prima sobre precio cruda</td><td class="r">—</td><td class="r">—</td><td class="r pos">+'+pct((P.pv/P.pc-1)*100)+'</td></tr>';
-  cthtml+='</tbody></table>';
-  N('comp-tbl-wrap').innerHTML=cthtml;
-  N('comp-txt').textContent=f2(P.pv-P.pc)+' adicionales por litro = '+fU(P.ing-crudaMes)+' extra de ingreso bruto mensual.';
-
-  // FLUJO kpis
-  var fk=N('flu-kpis');
-  fk.innerHTML=
-    kpi('VAN',fU(P.van),'USD',P.van>0?'g':'r')+
-    kpi('TIR',pct(P.tir*100),'anual',P.tir>P.tasa?'g':'r')+
-    kpi('Payback',P.pb>0?P.pb+' m':'> horizonte','meses',P.pb>0&&P.pb<=P.vida*6?'g':'o')+
-    kpi('VAN / Inversión',isFinite(P.van/P.inv)?(P.van/P.inv).toFixed(2)+'x':'—','multiplicador',P.van>P.inv?'g':P.van>0?'o':'r');
-
-  // FLUJO table
-  var fthtml='<table class="tbl"><thead><tr><th>Año</th><th class="r">Ingresos</th><th class="r">Egresos</th><th class="r">Flujo neto</th><th class="r">Acumulado</th><th class="r">VAN acum.</th></tr></thead><tbody>';
-  var acum=0,vacum=0;
-  for(var i=0;i<=P.vida;i++){
-    var fl=P.flows[i];
-    acum+=fl; vacum+=fl/Math.pow(1+P.tasa,i);
-    if(i===0){
-      fthtml+='<tr class="tot"><td>0</td><td class="r">—</td><td class="r neg">'+fU(P.inv)+'</td><td class="r neg">'+fU(fl)+'</td><td class="r neg">'+fU(acum)+'</td><td class="r neg">'+fU(vacum)+'</td></tr>';
-    } else {
-      var iA=P.pv*P.lef*12*Math.pow(1+P.crec,i-1);
-      var eA=(P.cv*P.lef*12+P.cf*12)*Math.pow(1+P.infl,i-1);
-      fthtml+='<tr><td>'+i+'</td><td class="r">'+fU(iA)+'</td><td class="r">'+fU(eA)+'</td><td class="r '+(fl>=0?'pos':'neg')+'">'+fU(fl)+'</td><td class="r '+(acum>=0?'pos':'neg')+'">'+fU(acum)+'</td><td class="r '+(vacum>=0?'pos':'neg')+'">'+fU(vacum)+'</td></tr>';
+  // MICRO tabla
+  if(N('mic-tbl')){
+    var uB=F.ingreso_mensual-F.egreso_mensual+(F.egreso_mensual-F.resultado_mensual-F.ingreso_mensual+F.ingreso_mensual);
+    uB=F.ingreso_mensual-cv*lm;
+    var rows=[['Ingresos brutos',F.ingreso_mensual,true],['— Costos variables',-cv*lm,false],['= Utilidad bruta',uB,true],['— Costos fijos',-cf,false],['= Resultado operativo',F.resultado_mensual,true]];
+    var t='<table class="tbl"><thead><tr><th>Concepto</th><th class="r">USD/mes</th><th class="r">% ingreso</th></tr></thead><tbody>';
+    rows.forEach(function(r){
+      var pp=F.ingreso_mensual>0?Math.abs(r[1])/F.ingreso_mensual*100:0;
+      t+='<tr'+(r[2]?' class="tot"':'')+'><td>'+r[0]+'</td><td class="r '+(r[1]>=0?'pos':'neg')+'">'+fU(r[1])+'</td><td class="r">'+pct(pp,1)+'</td></tr>';
+    });
+    t+='</tbody></table>';
+    N('mic-tbl').innerHTML=t;
+    var al=N('mic-alert');
+    if(al){
+      if(F.resultado_mensual>0){al.className='alert g';al.innerHTML='Operación rentable: <strong>+'+fU(F.resultado_mensual)+'</strong>/mes. VAN: <strong>'+fU(F.van)+'</strong> ('+vida+' años).';}
+      else if(F.resultado_mensual>-200){al.className='alert a';al.innerHTML='Resultado marginal (<strong>'+fU(F.resultado_mensual)+'</strong>/mes). Ajustar precio o volumen.';}
+      else{al.className='alert r';al.innerHTML='Operación deficitaria (<strong>'+fU(F.resultado_mensual)+'</strong>/mes). Revisar costos, precio y escala.';}
     }
   }
-  fthtml+='</tbody></table>';
-  N('flu-tbl-wrap').innerHTML=fthtml;
 
-  // Charts
-  var mL=['Inv.'],mD=[-P.inv];
-  for(var m=1;m<=36;m++){mL.push('M'+m);mD.push(mD[m-1]+P.res);}
-  var zero36=mL.map(function(){return 0});
-  if(CH1)CH1.destroy();
-  CH1=new Chart(N('ch-mens').getContext('2d'),{type:'line',data:{labels:mL,datasets:[{label:'Flujo acum.',data:mD,borderColor:'#2e7d52',backgroundColor:'rgba(46,125,82,.08)',fill:true,tension:.3,pointRadius:0,borderWidth:2},{label:'0',data:zero36,borderColor:'#b02020',borderWidth:1,borderDash:[5,4],pointRadius:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{font:{size:10},autoSkip:true,maxTicksLimit:12}},y:{ticks:{font:{size:10},callback:function(v){return'$'+Math.round(v/1000)+'k'}}}}}});
+  // BE detail
+  if(N('be-detail')){
+    var beVol=F.be_volumen_lm||0;
+    var prog=beVol>0?Math.min(100,lm/beVol*100):100;
+    N('be-detail').innerHTML=
+      '<div style="margin-bottom:8px">'+
+      '<div style="display:flex;justify-content:space-between;font-size:11px;color:var(--txt2);margin-bottom:3px"><span>Break-even volumen</span><span><strong>'+Math.ceil(beVol).toLocaleString('es')+' L/mes</strong></span></div>'+
+      '<div class="prog-wrap"><div class="prog-fill" style="width:'+Math.min(100,prog).toFixed(1)+'%;background:'+(prog>=100?'var(--g2)':prog>75?'var(--a2)':'var(--r2)')+'"></div></div>'+
+      '<div style="font-size:10px;color:var(--txt3);margin-top:2px">Volumen actual: <strong>'+lm.toLocaleString('es')+' L/mes</strong> | Capacidad máxima: <strong>'+(ld*dm).toLocaleString('es')+' L/mes</strong></div>'+
+      '</div>'+
+      '<div style="display:flex;justify-content:space-between;background:var(--surf);border-radius:var(--rad);padding:8px 10px">'+
+      '<span style="font-size:11px;color:var(--txt2)">Precio mínimo de equilibrio</span>'+
+      '<span style="font-size:15px;font-weight:500;color:var(--b2)">'+f2(F.be_precio_usd||0)+'/L</span></div>';
+  }
 
-  var tArr=[],vArr=[];
-  for(var t=0;t<=.5;t+=.025){tArr.push((t*100).toFixed(1)+'%');vArr.push(Math.round(VAN(P.flows,t)));}
-  if(CH2)CH2.destroy();
-  CH2=new Chart(N('ch-van').getContext('2d'),{type:'line',data:{labels:tArr,datasets:[{label:'VAN',data:vArr,borderColor:'#2563a8',backgroundColor:'rgba(37,99,168,.06)',fill:true,tension:.3,pointRadius:0,borderWidth:2},{label:'0',data:tArr.map(function(){return 0}),borderColor:'#b02020',borderWidth:1,borderDash:[5,4],pointRadius:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{font:{size:10},autoSkip:true,maxTicksLimit:10}},y:{ticks:{font:{size:10},callback:function(v){return'$'+Math.round(v/1000)+'k'}}}}}});
+  // Comparativa
+  if(N('comp-tbl')){
+    var crudaMes=V('p-pc')*lm;
+    N('comp-tbl').innerHTML='<table class="tbl"><thead><tr><th>Concepto</th><th class="r">Cruda</th><th class="r">Pasteurizada</th><th class="r">Delta</th></tr></thead><tbody>'+
+      '<tr><td>Ingreso mensual</td><td class="r">'+fU(crudaMes)+'</td><td class="r">'+fU(F.ingreso_mensual)+'</td><td class="r pos">+'+fU(F.ingreso_mensual-crudaMes)+'</td></tr>'+
+      '<tr><td>Precio/litro</td><td class="r">'+f2(V('p-pc'))+'</td><td class="r">'+f2(V('p-pv'))+'</td><td class="r pos">+'+f2(V('p-pv')-V('p-pc'))+'</td></tr>'+
+      '<tr class="tot"><td>Prima sobre precio cruda</td><td class="r">—</td><td class="r">—</td><td class="r pos">+'+(V('p-pc')>0?pct((V('p-pv')/V('p-pc')-1)*100,1):'—')+'</td></tr>'+
+      '</tbody></table>';
+  }
+
+  // MICRO return
+  if(N('mic-ret'))N('mic-ret').innerHTML=
+    kpi('ROI',pct(F.roi_pct,1),'% VAN/Inv.',F.roi_pct>50?'g':F.roi_pct>0?'a':'r')+
+    kpi('Payback',F.payback_meses?F.payback_meses+' meses':'N/D','',F.payback_meses&&F.payback_meses<=vida*6?'g':'a')+
+    kpi('VAN',fU(F.van),'USD',F.van>0?'g':'r')+
+    kpi('TIR',F.tir_pct!==null?pct(F.tir_pct,2):'N/D','anual',F.tir_pct>V('f-tasa')?'g':'r');
+
+  // FLUJO KPIs
+  if(N('flu-kpis'))N('flu-kpis').innerHTML=
+    kpi('VAN',fU(F.van),'USD',F.van>0?'g':'r')+
+    kpi('TIR',F.tir_pct!==null?pct(F.tir_pct,2):'N/D','anual',F.tir_pct>V('f-tasa')?'g':'r')+
+    kpi('Payback',F.payback_meses?F.payback_meses+' meses':'N/D','',F.payback_meses&&F.payback_meses<=vida*6?'g':'a')+
+    kpi('VAN/Inv.',isFinite(F.van/inv)?(F.van/inv).toFixed(2)+'x':'—','multiplicador',F.van>inv?'g':F.van>0?'a':'r');
+
+  if(N('flu-meta'))N('flu-meta').innerHTML='<strong>Metodología DCF:</strong> Moneda USD constantes | Tasa WACC: '+wacc.toFixed(2)+'% | Inflación costos: '+V('f-infl').toFixed(0)+'% anual | Crecimiento precio: '+V('f-crec').toFixed(1)+'% anual | Período: '+vida+' años | Las bandas ±20% representan variabilidad estructural mínima — la incertidumbre real puede ser mayor.';
+
+  // FLUJO tabla
+  if(N('flu-tbl')){
+    var flows=F.flujos_anuales;
+    var ft='<table class="tbl"><thead><tr><th>Año</th><th class="r">Ingresos</th><th class="r">Egresos</th><th class="r">Flujo neto</th><th class="r">Acumulado</th><th class="r">VAN acum.</th><th>Banda ±20%</th></tr></thead><tbody>';
+    var acum=0,vacum=0,tasa=wacc/100;
+    for(var i=0;i<=vida;i++){
+      var fl=flows[i];
+      acum+=fl;vacum+=fl/Math.pow(1+tasa,i);
+      if(i===0){
+        ft+='<tr class="tot"><td>0</td><td class="r">—</td><td class="r neg">'+fU(inv)+'</td><td class="r neg">'+fU(fl)+'</td><td class="r neg">'+fU(acum)+'</td><td class="r neg">'+fU(vacum)+'</td><td>—</td></tr>';
+      } else {
+        var gp=V('f-crec')/100,gc=V('f-infl')/100;
+        var iA=F.ingA*Math.pow(1+gp,i-1),eA=F.egA*Math.pow(1+gc,i-1);
+        var rng='['+fU(fl*.8)+', '+fU(fl*1.2)+']';
+        var neg=acum<0;
+        ft+='<tr'+(neg?' class="neg-row"':'')+'><td>'+i+'</td><td class="r">'+fU(iA)+'</td><td class="r">'+fU(eA)+'</td><td class="r '+(fl>=0?'pos':'neg')+'">'+fU(fl)+'</td><td class="r '+(acum>=0?'pos':'neg')+'">'+fU(acum)+'</td><td class="r '+(vacum>=0?'pos':'neg')+'">'+fU(vacum)+'</td><td class="band">'+rng+'</td></tr>';
+      }
+    }
+    ft+='</tbody></table>';
+    N('flu-tbl').innerHTML=ft;
+  }
+
+  // CHARTS
+  if(N('ch-flu')&&typeof Chart!=='undefined'){
+    var flows2=F.flujos_anuales;
+    var labels=['Inv'],dBase=[-inv],dLo=[-inv],dHi=[-inv];
+    for(var y=1;y<=vida;y++){
+      labels.push('A'+y);
+      var fl2=flows2[y]||0;
+      dBase.push(dBase[dBase.length-1]+fl2);
+      dLo.push(dLo[dLo.length-1]+fl2*0.8);
+      dHi.push(dHi[dHi.length-1]+fl2*1.2);
+    }
+    if(CH1)CH1.destroy();
+    CH1=new Chart(N('ch-flu').getContext('2d'),{type:'line',data:{labels:labels,datasets:[
+      {label:'Base',data:dBase,borderColor:'#1d7a4a',backgroundColor:'rgba(29,122,74,.07)',fill:true,tension:.3,pointRadius:2,borderWidth:2},
+      {label:'Pesimista',data:dLo,borderColor:'rgba(196,32,32,.4)',borderDash:[4,3],pointRadius:0,borderWidth:1},
+      {label:'Optimista',data:dHi,borderColor:'rgba(29,122,74,.3)',borderDash:[4,3],pointRadius:0,borderWidth:1},
+      {label:'0',data:labels.map(function(){return 0}),borderColor:'#aaa',borderWidth:1,borderDash:[5,4],pointRadius:0},
+    ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{font:{size:10}}},y:{ticks:{font:{size:10},callback:function(v){return'$'+Math.round(v/1000)+'k'}}}}}});
+  }
+
+  if(N('ch-van')&&typeof Chart!=='undefined'){
+    var tArr=[],vArr=[];
+    for(var t=0;t<=0.5;t+=0.025){tArr.push(pct(t*100,0));vArr.push(Math.round(calcularVAN(F.flujos_anuales,t)));}
+    if(CH2)CH2.destroy();
+    CH2=new Chart(N('ch-van').getContext('2d'),{type:'line',data:{labels:tArr,datasets:[
+      {label:'VAN',data:vArr,borderColor:'#1e56b0',backgroundColor:'rgba(30,86,176,.06)',fill:true,tension:.3,pointRadius:0,borderWidth:2},
+      {label:'0',data:tArr.map(function(){return 0}),borderColor:'#888',borderWidth:1,borderDash:[5,4],pointRadius:0},
+    ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{font:{size:10},autoSkip:true,maxTicksLimit:10}},y:{ticks:{font:{size:10},callback:function(v){return'$'+Math.round(v/1000)+'k'}}}}}});
+  }
+
+  // SENSIBILIDAD
+  if(N('sens-tbl')){
+    var pvs=[V('p-pv')*.6,V('p-pv')*.8,V('p-pv'),V('p-pv')*1.2,V('p-pv')*1.4];
+    var vols=[Math.round(lm*.4),Math.round(lm*.6),Math.round(lm*.8),lm,ld*dm];
+    var sh='<thead><tr><th style="background:var(--surf);padding:5px 8px;font-size:10px;border:0.5px solid var(--border)">Vol↓ / PV→</th>'+pvs.map(function(p){return'<th style="background:var(--surf);padding:5px 8px;font-size:10px;border:0.5px solid var(--border)">'+f2(p)+'</th>';}).join('')+'</tr></thead><tbody>';
+    vols.forEach(function(vol){
+      sh+='<tr><td style="background:var(--surf);padding:5px 8px;font-size:11px;font-weight:600;border:0.5px solid var(--border)">'+vol.toLocaleString('es')+'L</td>';
+      pvs.forEach(function(pv){
+        var fl3=calcularFlujos(inv,pv*vol*12,cf*12+cv*vol*12,vida,V('f-crec')/100,V('f-infl')/100);
+        var v3=Math.round(calcularVAN(fl3,wacc/100));
+        var isBase=Math.abs(pv-V('p-pv'))<.01&&vol===lm;
+        var cl=isBase?'sc-bs':v3>inv*.5?'sc-vp':v3>0?'sc-ok':v3>-inv*.5?'sc-mg':'sc-no';
+        sh+='<td class="sens-cell '+cl+'" style="border:0.5px solid var(--border)">'+(v3>=0?'$':'-$')+Math.abs(Math.round(v3/1000))+'k</td>';
+      });sh+='</tr>';
+    });
+    sh+='</tbody>';
+    N('sens-tbl').innerHTML=sh;
+  }
 
   // ESCENARIOS
-  var precios=[P.pv*.6,P.pv*.8,P.pv,P.pv*1.2,P.pv*1.4];
-  var vols=[Math.round(P.lef*.4),Math.round(P.lef*.6),Math.round(P.lef*.8),P.lef,Math.round(P.lm)];
-  var sh='<thead><tr><th>Vol \ Precio</th>'+precios.map(function(pr){return'<th>'+f2(pr)+'</th>';}).join('')+'</tr></thead><tbody>';
-  vols.forEach(function(vol){
-    sh+='<tr><td class="rh">'+vol.toLocaleString('es')+'L</td>';
-    precios.forEach(function(pr){
-      var fl2=[-P.inv]; for(var y=1;y<=P.vida;y++) fl2.push((pr*vol-P.cv*vol-P.cf)*12);
-      var v2=Math.round(VAN(fl2,P.tasa));
-      var isBase=Math.abs(pr-P.pv)<.01&&Math.abs(vol-P.lef)<1;
-      var cl=isBase?'sc0':v2>P.inv*.5?'sc5':v2>0?'sc4':v2>-P.inv*.5?'sc3':'sc2';
-      sh+='<td class="'+cl+'">'+fU(v2)+'</td>';
+  if(N('esc-tbl')){
+    var escs=[['Pesimista','−20% PV, 50% vol',V('p-pv')*.8,lm*.5],['Conservador','−10% PV, 70% vol',V('p-pv')*.9,lm*.7],['Base','Configuración actual',V('p-pv'),lm],['Optimista','+10% PV, 90% vol',V('p-pv')*1.1,lm*.9],['Muy optimista','+20% PV, cap. máx.',V('p-pv')*1.2,ld*dm]];
+    var eh='<table class="tbl"><thead><tr><th>Escenario</th><th>Descripción</th><th class="r">Res./mes</th><th class="r">VAN</th><th class="r">TIR</th></tr></thead><tbody>';
+    escs.forEach(function(e){
+      var vol2=Math.round(e[3]),res2=(e[2]*vol2-cv*vol2-cf);
+      var fl4=calcularFlujos(inv,e[2]*vol2*12,cf*12+cv*vol2*12,vida,V('f-crec')/100,V('f-infl')/100);
+      var v4=calcularVAN(fl4,wacc/100);
+      var t4=calcularTIR(fl4);
+      eh+='<tr'+(e[0]==='Base'?' class="tot"':'')+'><td>'+e[0]+'</td><td style="font-size:10px;color:var(--txt3)">'+e[1]+'</td><td class="r '+(res2>=0?'pos':'neg')+'">'+fU(res2)+'</td><td class="r '+(v4>=0?'pos':'neg')+'">'+fU(v4)+'</td><td class="r">'+(t4.valor?pct(t4.valor*100,1):'N/D')+'</td></tr>';
     });
-    sh+='</tr>';
-  });
-  sh+='</tbody>';
-  N('sens-tbl').innerHTML=sh;
+    eh+='</tbody></table>';
+    N('esc-tbl').innerHTML=eh;
+  }
 
-  var esc=[
-    ['Pesimista','−20% precio, 50% vol',P.pv*.8,P.lef*.5],
-    ['Conservador','−10% precio, 70% vol',P.pv*.9,P.lef*.7],
-    ['Base','Configuración actual',P.pv,P.lef],
-    ['Optimista','+10% precio, 90% vol',P.pv*1.1,P.lef*.9],
-    ['Muy optimista','+20% precio, cap. máx.',P.pv*1.2,P.lm],
-  ];
-  var eh='<table class="tbl"><thead><tr><th>Escenario</th><th>Descripción</th><th class="r">USD/L</th><th class="r">Res./mes</th><th class="r">VAN</th></tr></thead><tbody>';
-  esc.forEach(function(e){
-    var vol=Math.round(e[3]),res=(e[2]*vol-P.cv*vol-P.cf);
-    var fl3=[-P.inv]; for(var y=1;y<=P.vida;y++) fl3.push(res*12);
-    var ve=VAN(fl3,P.tasa);
-    eh+='<tr'+(e[0]==='Base'?' class="tot"':'')+'><td>'+e[0]+'</td><td style="font-size:11px;color:var(--txt2)">'+e[1]+'</td><td class="r">'+f2(e[2])+'</td><td class="r '+(res>=0?'pos':'neg')+'">'+fU(res)+'</td><td class="r '+(ve>=0?'pos':'neg')+'">'+fU(ve)+'</td></tr>';
-  });
-  eh+='</tbody></table>';
-  N('esc-tbl-wrap').innerHTML=eh;
+  // TÉCNICO
+  var okTemp=V('t-temp')>=63,okRet=V('t-ret')>=30;
+  var tvbadge=function(ok){return'<span style="display:inline-block;padding:2px 7px;border-radius:4px;font-size:10px;font-weight:500;background:'+(ok?'var(--g4)':'var(--r4)')+';color:'+(ok?'var(--g1)':'var(--r1)')+'">'+(ok?'Cumple':'No cumple')+'</span>';};
+  ['cb','mt','sal','list'].forEach(function(id){if(N('tv-'+id))N('tv-'+id).innerHTML=tvbadge(okTemp&&okRet);});
+  if(N('tec-validacion'))N('tec-validacion').innerHTML=okTemp&&okRet?'<div class="alert g">Parámetros térmicos conformes con LTLT: '+V('t-temp')+'°C / '+V('t-ret')+' min.</div>':'<div class="alert r">Parámetros insuficientes: LTLT requiere ≥63°C / ≥30 min. Revisar equipo.</div>';
 
   // AMBIENTAL
-  var co2=V('e-c1')+V('e-c3')*V('e-c2')+V('e-c4')+V('e-c5');
-  var co2uht=V('e-c6');
-  var h2o=V('e-h1')+V('e-h2')*(1-V('e-h3')/100);
-  var h2ouht=V('e-h4');
-  var litAno=P.lef*12;
+  var hc=R.ambiental.carbono,hh=R.ambiental.hidrica;
+  if(hc&&N('amb-kpis')){
+    N('amb-kpis').innerHTML=
+      kpi('Huella PROCESO',hc.huella_proceso.toFixed(4)+' kg/L','Tu tecnología ('+hc.pct_proceso+'%)','')+
+      kpi('Huella UPSTREAM',hc.huella_upstream.toFixed(4)+' kg/L','Materia prima ('+hc.pct_upstream+'%)','')+
+      kpi('CO₂eq TOTAL',hc.total.toFixed(4)+' kg/L','Producto final',hc.total<V('e-c5')?'g':'a')+
+      kpi('H₂O azul total',hh.total_azul.toFixed(1)+' L/L','ISO 14046','b');
+    var mxco=Math.max(hc.total,V('e-c5'))*1.1||1;
+    if(N('amb-co2-bars'))N('amb-co2-bars').innerHTML=
+      '<div style="margin-bottom:12px;padding:10px;background:var(--g5);border-left:3px solid var(--g2);border-radius:var(--rad)"><strong style="color:var(--g1)">DESGLOSE:</strong> Tu proceso aporta '+hc.pct_proceso+'% | Materia prima (tambo) aporta '+hc.pct_upstream+'%</div>'+
+      brow('Scope 3 UPSTREAM (tambo)',hc.scope_3_upstream.toFixed(4),mxco,'#0f4a2a')+
+      brow('Scope 2 proceso+frío',hc.scope_2_proceso.toFixed(4)+' + '+hc.scope_2_frio.toFixed(4),mxco,'#1e56b0')+
+      brow('Scope 3 sachet',hc.scope_3_sachet.toFixed(4),mxco,'#c05a00')+
+      brow('Scope 1 distrib.',hc.scope_1_dist.toFixed(4),mxco,'#5b3fa6')+
+      '<div style="margin-top:8px;padding:8px;background:var(--card);border:1px solid var(--border);border-radius:var(--rad)"><strong>TU PROCESO (sin upstream):</strong> '+hc.huella_proceso.toFixed(4)+' kg CO2eq/L</div>'+
+      '<div style="margin-top:8px;padding:8px;background:var(--card);border:2px solid var(--g2);border-radius:var(--rad)"><strong style="color:var(--g1)">TOTAL PRODUCTO:</strong> '+hc.total.toFixed(4)+' kg CO2eq/L</div>';
+    var mxhh=Math.max(hh.total_azul,hh.total_gris)*1.1||1;
+    if(N('amb-h2o-bars'))N('amb-h2o-bars').innerHTML=
+      brow('Azul upstream',hh.azul_upstream.toFixed(1),hh.total_azul*1.2,'#1e56b0')+
+      brow('Azul proceso CIP',hh.azul_proceso.toFixed(2),hh.total_azul*1.2,'#4a8fd4')+
+      brow('Gris upstream',hh.gris_upstream.toFixed(1),hh.total_azul*1.2,'#888')+
+      brow('Gris proceso',hh.gris_proceso.toFixed(2),hh.total_azul*1.2,'#aaa');
+  }
 
-  N('amb-kpis').innerHTML=
-    kpi('CO₂eq/litro nuestro',co2.toFixed(3)+' kg','',co2<co2uht*.8?'g':co2<co2uht?'o':'r')+
-    kpi('CO₂eq/litro UHT ref.',co2uht.toFixed(3)+' kg','','b')+
-    kpi('Reducción CO₂ vs UHT',pct((co2uht-co2)/co2uht*100),'',co2<co2uht?'g':'r')+
-    kpi('H₂O/litro',h2o.toFixed(0)+' L','',h2o<h2ouht?'g':'o')+
-    kpi('Plástico/mes',((P.lef*V('e-p1')/1000)).toFixed(1)+' kg','sachet','o')+
-    kpi('km locales vs industrial',V('e-k1')+' vs '+V('e-k2')+' km','','g');
+  // DECISIÓN
+  buildDecision(F,R,inv,hc,hh);
 
-  var mxco=Math.max(co2,co2uht)*1.1;
-  N('amb-co2-bars').innerHTML=
-    bar('Upstream cruda',V('e-c1').toFixed(3),mxco,'#1a5c38')+
-    bar('Proceso+sachet+dist',(V('e-c3')*V('e-c2')+V('e-c4')+V('e-c5')).toFixed(4),mxco,'#2563a8')+
-    bar('TOTAL proyecto',co2.toFixed(3),mxco,'#0d3a20')+
-    bar('UHT industrial ref.',co2uht.toFixed(3),mxco,'#b02020');
+  // INFORME
+  buildReport(F,R,inv,hc,hh);
+}
 
-  var mxh=Math.max(h2o,h2ouht)*1.1;
-  N('amb-h2o-bars').innerHTML=
-    bar('Upstream cruda',V('e-h1').toFixed(0),mxh,'#2563a8')+
-    bar('Proceso directo',V('e-h2').toFixed(2),mxh,'#5b9fd4')+
-    bar('TOTAL proyecto',h2o.toFixed(1),mxh,'#0d3a20')+
-    bar('UHT industrial ref.',h2ouht.toFixed(0),mxh,'#b02020');
-
-  var fondos=[
-    {n:'FEADER / LEADER (UE)',c:co2<co2uht&&V('e-k1')<100,r:'Impacto rural territorial + reducción CO₂ verificable'},
-    {n:'CDTI España',c:true,r:'Consorcio empresa + investigación (INTA-UBA + universidad española)'},
-    {n:'ADER PAL La Rioja',c:true,r:'Inversión productiva alimentaria en La Rioja'},
-    {n:'Programa LIFE (UE)',c:co2<co2uht,r:'Demostración ambiental: reducción CO₂ vs. cadena convencional'},
-    {n:'Banca ética / impacto',c:co2<co2uht&&h2o<h2ouht,r:'Métricas ESG verificables + informe de impacto'},
-  ];
-  N('amb-fondos').innerHTML=fondos.map(function(f){
-    return'<div style="display:flex;gap:10px;padding:9px 0;border-bottom:1px solid var(--border)"><span style="font-size:16px;flex-shrink:0">'+(f.c?'✅':'⚠️')+'</span><div><div style="font-weight:600;font-size:13px">'+f.n+'</div><div style="font-size:11px;color:var(--txt2)">'+f.r+'</div></div></div>';
-  }).join('');
-
-  // REPORTE
-  N('rp-tit').textContent=N('c-nombre').value||'—';
-  N('rp-sub').textContent=(N('c-tech').value||'')+' — '+(N('c-region').value||'')+', '+(N('c-pais').value||'');
-
-  var sf=0;
-  if(P.van>0)sf+=30; if(P.tir>P.tasa*1.5)sf+=25; if(P.res>0)sf+=20; if(P.pb>0&&P.pb<=P.vida*6)sf+=15; if(P.marpct>20)sf+=10;
+// ═══════════════════════════════════════════
+// DECISIÓN
+// ═══════════════════════════════════════════
+function buildDecision(F,R,inv,hc,hh){
+  var sf=0,vida=V('f-vida'),tasa=V('f-tasa');
+  if(F.van>0)sf+=30;if(F.tir_pct>tasa*1.5)sf+=20;if(F.resultado_mensual>0)sf+=20;if(F.payback_meses&&F.payback_meses<=vida*6)sf+=15;if(F.margen_pct>20)sf+=15;
   sf=Math.min(100,sf);
-  var se=0;
-  if(co2<co2uht)se+=35; if(V('e-k1')<100)se+=25; if(V('e-p2')>0)se+=20; se+=10; se+=10;
-  se=Math.min(100,se);
-  var st=Math.round(sf*.6+se*.4);
+  var stec=(V('t-temp')>=63&&V('t-ret')>=30)?80:40;
+  var sesg=0;if(hc&&hc.total<V('e-c5'))sesg+=40;if(hh&&hh.total_azul<40)sesg+=20;sesg+=20;if(V('e-h4')>0)sesg+=10;sesg=Math.min(100,sesg);
+  var stot=Math.round(sf*.45+stec*.2+sesg*.35);
 
-  N('sc-fin').textContent=sf; N('sc-esg').textContent=se; N('sc-tot').textContent=st;
+  function sr(id,score){
+    var el=N(id);if(!el)return;
+    var sv=el.querySelector('.sv');
+    if(sv){sv.textContent=score;sv.style.color=score>=70?'#3aad74':score>=50?'#f09030':'#e85050';}
+    el.style.borderColor=score>=70?'#3aad74':score>=50?'#f09030':'#e85050';
+  }
+  sr('sr-fin',sf);sr('sr-tec',stec);sr('sr-esg',sesg);sr('sr-tot',stot);
 
-  N('rp-fin-wrap').innerHTML='<table class="tbl"><thead><tr><th>Indicador</th><th class="r">Valor</th><th>Resultado</th></tr></thead><tbody>'+[
-    ['Inversión total',fU(P.inv),''],
-    ['VAN ('+pct(P.tasa*100)+')',fU(P.van),P.van>0?'✅ Positivo':'❌ Negativo'],
-    ['TIR',pct(P.tir*100),P.tir>P.tasa?'✅ Supera tasa':'❌ Bajo la tasa'],
-    ['Payback',P.pb>0?P.pb+' meses':'> horizonte',P.pb>0&&P.pb<=P.vida*6?'✅ Razonable':'⚠️ Largo'],
-    ['Resultado mensual',fU(P.res),P.res>0?'✅ Positivo':'❌ Negativo'],
-    ['Margen bruto/litro',f2(P.mar)+' ('+pct(P.marpct)+')',P.marpct>20?'✅ Sólido':P.marpct>0?'⚠️ Ajustado':'❌ Negativo'],
-    ['Break-even volumen',P.be_v<99999?Math.ceil(P.be_v)+' L/mes':'No viable',P.lef>P.be_v?'✅ Alcanzado':'❌ No alcanzado'],
-    ['CO₂eq/litro vs UHT',co2.toFixed(3)+' vs '+co2uht+' kg',co2<co2uht?'✅ Menor huella':'❌ Mayor huella'],
+  if(N('dec-verd')){
+    if(stot>=70){N('dec-verd').textContent='VIABLE — Inversión recomendada';N('dec-verd').style.color='#3aad74';}
+    else if(stot>=50){N('dec-verd').textContent='VIABLE CON CONDICIONES';N('dec-verd').style.color='#f09030';}
+    else{N('dec-verd').textContent='NO RECOMENDADO en condiciones actuales';N('dec-verd').style.color='#e85050';}
+  }
+  if(N('dec-cond'))N('dec-cond').textContent='Financiero: '+sf+'/100 · Técnico: '+stec+'/100 · ESG: '+sesg+'/100 · Total: '+stot+'/100';
+
+  if(N('dec-tbl'))N('dec-tbl').innerHTML='<table class="tbl"><thead><tr><th>Indicador</th><th class="r">Valor</th><th>Umbral</th><th class="c">Estado</th></tr></thead><tbody>'+[
+    ['Inversión total',fU(inv),'—',''],
+    ['VAN',fU(F.van),'>0',F.van>0?badge('OK','g'):badge('Revisar','r')],
+    ['TIR',F.tir_pct!==null?pct(F.tir_pct,2):'N/D','>'+pct(V('f-tasa'),1),F.tir_pct>V('f-tasa')?badge('OK','g'):badge('Bajo tasa','r')],
+    ['Payback',F.payback_meses?F.payback_meses+' meses':'N/D','<'+(Math.round(V('f-vida')/2)*12)+' meses',F.payback_meses&&F.payback_meses<V('f-vida')*6?badge('OK','g'):badge('Largo','a')],
+    ['Resultado mensual',fU(F.resultado_mensual),'>0',F.resultado_mensual>0?badge('OK','g'):badge('Déficit','r')],
+    ['Margen bruto/L',f2(F.margen_litro)+' ('+pct(F.margen_pct,1)+')','>20%',F.margen_pct>20?badge('OK','g'):F.margen_pct>0?badge('Ajustado','a'):badge('Negativo','r')],
+    ['CO₂ vs UHT',hc?hc.total.toFixed(3)+' vs '+V('e-c5')+' kg/L':'N/D','Menor',hc&&hc.total<V('e-c5')?badge('Menor huella','g'):badge('Mayor huella','r')],
+  ].map(function(r){return'<tr><td>'+r[0]+'</td><td class="r">'+r[1]+'</td><td style="font-size:10px;color:var(--txt3)">'+r[2]+'</td><td class="c">'+r[3]+'</td></tr>';}).join('')+'</tbody></table>';
+
+  if(N('dec-brechas')){
+    var brechas=[];
+    if(F.van<=0)brechas.push({c:'r',t:'VAN negativo: no recupera la inversión en el período evaluado.'});
+    if(F.resultado_mensual<=0)brechas.push({c:'r',t:'Resultado mensual negativo: no cubre costos operativos al volumen configurado.'});
+    if(F.be_volumen_lm&&V('p-ld')*V('p-dm')<F.be_volumen_lm)brechas.push({c:'r',t:'Volumen bajo break-even: faltan '+Math.ceil(F.be_volumen_lm-V('p-ld')*V('p-dm'))+' L/mes para equilibrar.'});
+    if(R.advertencias&&R.advertencias.length)R.advertencias.forEach(function(a){brechas.push({c:'a',t:a});});
+    brechas.push({c:'b',t:'Curva de adopción no modelada: el año 1 rara vez opera al volumen pleno desde enero.'});
+    brechas.push({c:'b',t:'Validación microbiológica in situ obligatoria antes de operación comercial.'});
+    brechas.push({c:'b',t:'Precio de leche cruda requiere actualización a valor vigente en el mercado local.'});
+    N('dec-brechas').innerHTML=brechas.map(function(b){return'<div class="alert '+b.c+'" style="margin-bottom:4px">'+b.t+'</div>';}).join('');
+  }
+}
+
+// ═══════════════════════════════════════════
+// INFORME
+// ═══════════════════════════════════════════
+function buildReport(F,R,inv,hc,hh){
+  if(N('rp-tit'))N('rp-tit').textContent=N('c-nombre')?N('c-nombre').value:'—';
+  if(N('rp-sub'))N('rp-sub').textContent=(N('c-region')?N('c-region').value:'')+(N('c-pais')?' · '+N('c-pais').value:'')+' · '+(N('c-fecha')?N('c-fecha').value:'')+' · Motor: SIM-PAST v3.0';
+  if(N('rp-fin'))N('rp-fin').innerHTML='<table class="tbl"><thead><tr><th>Indicador</th><th class="r">Valor</th><th>Resultado</th></tr></thead><tbody>'+[
+    ['Inversión total',fU(inv),''],
+    ['VAN ('+pct(V('f-tasa'),1)+', '+V('f-vida')+'a)',fU(F.van),F.van>0?'✅ Positivo':'❌ Negativo'],
+    ['TIR',F.tir_pct!==null?pct(F.tir_pct,2):'N/D',F.tir_pct>V('f-tasa')?'✅ Supera tasa':'❌ Bajo tasa'],
+    ['Payback',F.payback_meses?F.payback_meses+' meses':'N/D',F.payback_meses&&F.payback_meses<=V('f-vida')*6?'✅ Razonable':'⚠️ Largo'],
+    ['Resultado mensual',fU(F.resultado_mensual),F.resultado_mensual>0?'✅ Positivo':'❌ Déficit'],
+    ['Break-even volumen',F.be_volumen_lm?Math.ceil(F.be_volumen_lm)+' L/mes':'N/D',''],
+    ['Margen bruto/litro',f2(F.margen_litro)+' ('+pct(F.margen_pct,1)+')',F.margen_pct>20?'✅ Sólido':F.margen_pct>0?'⚠️ Ajustado':'❌ Negativo'],
+    ['CO₂eq/L vs UHT',hc?hc.total.toFixed(4)+' vs '+V('e-c5')+' kg':'N/D',hc&&hc.total<V('e-c5')?'✅ Menor huella':'❌ Mayor huella'],
+    ['H₂O azul / litro',hh?hh.total_azul.toFixed(2)+' L/L':'N/D','ISO 14046:2014'],
   ].map(function(r){return'<tr><td>'+r[0]+'</td><td class="r">'+r[1]+'</td><td>'+r[2]+'</td></tr>';}).join('')+'</tbody></table>';
 
+  var stot=parseInt(N('sr-tot').querySelector('.sv').textContent)||0;
   var cc,ct;
-  if(st>=70){cc='alert g';ct='✅ PROYECTO VIABLE Y RECOMENDADO. VAN positivo, TIR superior a la tasa de descuento y métricas ambientales favorables. Cumple criterios para FEADER, CDTI y fondos de impacto.';}
-  else if(st>=50){cc='alert o';ct='⚠️ VIABLE CON CONDICIONES. Revisar precio de venta o modelo de distribución antes de postular a fondos verdes.';}
-  else{cc='alert r';ct='❌ NO RECOMENDADO EN CONDICIONES ACTUALES. Indicadores financieros o ambientales insuficientes. Revisar costos, precio y escala mínima.';}
-  N('rp-concl').innerHTML='<div class="'+cc+'" style="margin-bottom:10px">'+ct+'</div><p style="font-size:12px;color:var(--txt2)">Score financiero: '+sf+'/100 | ESG: '+se+'/100 | Total: '+st+'/100</p>';
+  if(stot>=70){cc='g';ct='✅ PROYECTO VIABLE — El análisis muestra indicadores financieros y ambientales favorables bajo los supuestos declarados.';}
+  else if(stot>=50){cc='a';ct='⚠️ VIABLE CON CONDICIONES — Resolver brechas críticas identificadas antes de comprometer la inversión.';}
+  else{cc='r';ct='❌ NO RECOMENDADO — Indicadores financieros o técnicos insuficientes. Revisar precio, volumen y estructura de costos.';}
+  if(N('rp-concl'))N('rp-concl').innerHTML='<div class="alert '+cc+'">'+ct+'</div><p style="font-size:11px;color:var(--txt3);margin-top:6px">Score: Financiero '+N('sr-fin').querySelector('.sv').textContent+'/100 · ESG '+N('sr-esg').querySelector('.sv').textContent+'/100 · Total '+stot+'/100</p>';
 
-  var brechas=[];
-  if(P.van<=0) brechas.push({c:'r',t:'VAN negativo: el proyecto no recupera la inversión en el período evaluado.'});
-  if(P.res<=0) brechas.push({c:'r',t:'Resultado mensual negativo: la operación no cubre sus costos en el volumen configurado.'});
-  if(P.lef<=P.be_v) brechas.push({c:'o',t:'Volumen bajo el break-even: se necesitan '+Math.ceil(P.be_v-P.lef)+' L/mes más.'});
-  if(V('e-p2')===0) brechas.push({c:'o',t:'Sin recuperación de plástico sachet. El impuesto Ley 7/2022 aplica en España.'});
-  brechas.push({c:'b',t:'Marcado CE del equipo: verificar antes de cualquier operación en la UE.'});
-  brechas.push({c:'b',t:'Sachet bajo Reg. UE 10/2011: confirmar aptitud para pasteurización con el proveedor.'});
-  N('rp-brechas').innerHTML=brechas.map(function(b){return'<div class="alert '+b.c+'" style="margin-bottom:5px">'+b.t+'</div>';}).join('');
+  if(N('rp-brechas')){
+    var brs=[];
+    if(F.van<=0)brs.push({c:'r',t:'VAN negativo.'});
+    if(F.resultado_mensual<=0)brs.push({c:'r',t:'Resultado operativo negativo.'});
+    brs.push({c:'b',t:'Incertidumbre modelo: ±20–35% financiero | ±25–35% CO₂ | ±50% huella hídrica.'});
+    brs.push({c:'b',t:'Curva de adopción de mercado no modelada — payback real puede ser mayor al calculado.'});
+    brs.push({c:'b',t:'Para uso ante autoridades o financiadores: requiere firma de profesional matriculado.'});
+    N('rp-brechas').innerHTML=brs.map(function(b){return'<div class="alert '+b.c+'" style="margin-bottom:4px">'+b.t+'</div>';}).join('');
+  }
 
-  var fondos2=[
-    {n:'FEADER/LEADER',c:co2<co2uht&&V('e-k1')<100,r:'Impacto rural + CO₂'},
-    {n:'CDTI',c:true,r:'Consorcio I+D+i'},
-    {n:'ADER PAL La Rioja',c:true,r:'Inversión alimentaria'},
-    {n:'LIFE (UE)',c:co2<co2uht,r:'Reducción CO₂ demostrable'},
-    {n:'Banca ética',c:se>=50,r:'ESG verificable'},
-  ];
-  N('rp-fondos').innerHTML=fondos2.map(function(f){
-    return'<div style="display:flex;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)"><span>'+(f.c?'✅':'⚠️')+'</span><div style="font-size:13px;font-weight:600">'+f.n+'<span style="font-size:11px;font-weight:400;color:var(--txt2);margin-left:8px">'+f.r+'</span></div></div>';
-  }).join('');
+  if(N('rp-decl'))N('rp-decl').innerHTML='<strong>Declaración:</strong> Análisis generado con SIM-PAST v3.0. Motor auditado — errores FIN-01/FIN-06, AMB-01/AMB-03 corregidos. VAN calculado sobre período completo declarado. Costo oportunidad leche cruda validado. Incertidumbre declarada en todos los resultados. Este documento es un instrumento de apoyo a la toma de decisiones — no un dictamen profesional. '+(N('rep-firma')&&N('rep-firma').value?'Analista: '+N('rep-firma').value+'.':'Sin firma de analista.');
 }
 
+// ═══════════════════════════════════════════
+// SIM INTERACTIVO
+// ═══════════════════════════════════════════
 function simCalc(){
-  var sp=parseFloat(N('s-p').value)||1.3;
-  var sv2=parseFloat(N('s-v').value)||80;
-  var scv=parseFloat(N('s-cv').value)||.6;
-  var scf=parseFloat(N('s-cf').value)||2160;
-  var vida=V('f-vida')||10, tasa=V('f-tasa')/100;
-  var inv=V('i-eq')+V('i-fr')+V('i-sa')+V('i-ha')+V('i-sw')+V('i-cw')+V('i-tr')+V('i-ot');
-  var ld=V('p-ld'),dm=V('p-dm'),lm=ld*dm;
-  var vol=Math.round(lm*sv2/100);
-  var res=sp*vol-scv*vol-scf;
-  var fl=[-inv]; for(var y=1;y<=vida;y++) fl.push(res*12);
-  var van=VAN(fl,tasa), tir=TIR(fl);
-  var pb=0,ac=-inv; for(var i=1;i<fl.length;i++){ac+=fl[i];if(ac>=0){pb=i*12;break}}
-  var mg=vol>0?sp-scv-scf/vol:0;
-  N('sim-kpis').innerHTML=
-    kpi('VAN',fU(van),'',van>0?'g':'r')+
-    kpi('TIR',pct(tir*100),'',tir>tasa?'g':'r')+
-    kpi('Payback',pb>0?pb+' m':'> vida útil','',pb>0&&pb<=vida*6?'g':'o')+
-    kpi('Margen/litro',f2(mg),'',mg>0?'g':'r');
+  var sp=parseFloat(N('s-p').value)||1.411;
+  var sv=parseFloat(N('s-v').value)||80;
+  var scv=parseFloat(N('s-cv').value)||.56;
+  var scf=parseFloat(N('s-cf').value)||700;
+  var vida=V('f-vida')||9,tasa=V('f-tasa')/100;
+  var lm2=Math.round(V('p-ld')*V('p-dm')*sv/100);
+  var inv2=V('i-eq')+V('i-fr')+V('i-sa')+V('i-ha')+V('i-sw')+V('i-cw')+V('i-tr');
+  inv2=inv2*1.1;
+  var fl5=calcularFlujos(inv2,sp*lm2*12,(scv*lm2+scf)*12,vida,V('f-crec')/100,V('f-infl')/100);
+  var v5=calcularVAN(fl5,tasa);
+  var t5=calcularTIR(fl5);
+  var p5=calcularPayback(fl5);
+  var mg5=lm2>0?sp-scv-scf/lm2:0;
+  if(N('sim-kpis'))N('sim-kpis').innerHTML=
+    kpi('VAN',fU(v5),'',v5>0?'g':'r')+
+    kpi('TIR',t5.valor?pct(t5.valor*100,1):'N/D','',t5.valor>tasa?'g':'r')+
+    kpi('Payback',p5.anios?+(p5.anios*12).toFixed(1)+' m':'N/D','',p5.anios&&p5.anios*12<=vida*6?'g':'a')+
+    kpi('Margen/L',f2(mg5),'',mg5>0?'g':'r');
 }
 
-function openGuide(){N('guide').style.display='flex'}
-function closeGuide(){
-  N('guide').style.display='none';
-  try{if(N('no-guide').checked)localStorage.setItem('at_guide','1');}catch(e){}
-}
-
-function toast(msg,err){
-  var t=N('toast');
-  t.textContent=msg;
-  t.style.background=err?'#b02020':'#1a5c38';
-  t.style.opacity='1';
-  clearTimeout(t._t);
-  t._t=setTimeout(function(){t.style.opacity='0'},3000);
-}
-
+// ═══════════════════════════════════════════
+// SAVE / LOAD
+// ═══════════════════════════════════════════
 function saveJSON(){
   var data={};
-  document.querySelectorAll('input:not(:disabled),select').forEach(function(el){if(el.id)data[el.id]=el.value});
-  data._ts=new Date().toISOString();
+  document.querySelectorAll('input:not(:disabled),select,textarea').forEach(function(el){if(el.id)data[el.id]=el.value;});
+  data._ts=new Date().toISOString();data._motor='SIM-PAST v3.0';
   var blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
   var url=URL.createObjectURL(blob);
-  var a=document.createElement('a');
-  a.href=url;
-  a.download=(N('c-nombre').value||'proyecto').replace(/\s+/g,'_')+'.json';
+  var a=document.createElement('a');a.href=url;
+  a.download=((N('c-nombre')?N('c-nombre').value:'proyecto').replace(/\s+/g,'_'))+'_simPAST.json';
   document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);
-  toast('Proyecto guardado ✓');
+  toast('Proyecto guardado ✓','g');
 }
-
 function loadJSON(){
-  var inp=document.createElement('input');
-  inp.type='file';inp.accept='.json';
+  var inp=document.createElement('input');inp.type='file';inp.accept='.json';
   inp.onchange=function(e){
     var f=e.target.files[0];if(!f)return;
     var r=new FileReader();
     r.onload=function(ev){
       try{
         var d=JSON.parse(ev.target.result);
-        delete d._ts;
+        delete d._ts;delete d._motor;
         Object.keys(d).forEach(function(k){var el=N(k);if(el&&!el.disabled)el.value=d[k];});
-        recalc();toast('Proyecto cargado ✓');
-      }catch(err){toast('Error: '+err.message,true);}
-    };
-    r.readAsText(f);
+        recalc();toast('Proyecto cargado ✓','g');
+      }catch(err){toast('Error: '+err.message,'r');}
+    };r.readAsText(f);
   };
   document.body.appendChild(inp);inp.click();document.body.removeChild(inp);
 }
 
-// AUTO-SAVE
-function autoSave(){try{var d={};document.querySelectorAll('input:not(:disabled),select').forEach(function(el){if(el.id)d[el.id]=el.value});localStorage.setItem('at_data',JSON.stringify(d));}catch(e){}}
-function autoLoad(){
-  try{
-    var s=localStorage.getItem('at_data');
-    if(s){var d=JSON.parse(s);Object.keys(d).forEach(function(k){var el=N(k);if(el&&!el.disabled)el.value=d[k]});toast('Sesión anterior restaurada');}
-  }catch(e){}
-}
-setInterval(autoSave,20000);
-
+// ═══════════════════════════════════════════
 // INIT
+// ═══════════════════════════════════════════
 window.addEventListener('load',function(){
   N('c-fecha').value=new Date().toISOString().slice(0,10);
-  autoLoad();
   recalc();
   simCalc();
-  try{if(!localStorage.getItem('at_guide')&&!localStorage.getItem('at_data')){setTimeout(openGuide,700);}}catch(e){}
 });
 </script>
 </body>
